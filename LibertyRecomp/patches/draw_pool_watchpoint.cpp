@@ -56,7 +56,7 @@ bool WatchDiagnosticsEnabled() noexcept {
 const char* PoisonTag(uint32_t v) {
     if (v == POISON)        return " *** POISON ***";
     if (v == 0)             return " (null)";
-    if (v < 0x80000000u)    return " *** SUSPICIOUS LOW ***";
+    if (v <= 0xFFFFu)       return " (sentinel)";
     return "";
 }
 
@@ -103,9 +103,13 @@ PPC_FUNC_HOOK(sub_828BF270) {
     }
     EnsurePollerStarted();
     uint32_t value = ReadGuestU32(WATCH_ADDR);
-    uint64_t seq   = g_event_seq.fetch_add(1, std::memory_order_relaxed);
-    LOGF_WARNING("[WATCH] seq={} READ  sub_828BF270 LR=0x{:08X} *0x{:08X}=0x{:08X}{}",
-                 seq, ctx.lr, WATCH_ADDR, value, PoisonTag(value));
+    static thread_local uint64_t s_read_count = 0;
+    const uint64_t read_count = ++s_read_count;
+    if (read_count <= 32 || (read_count % 1000) == 0 || value == POISON) {
+        uint64_t seq = g_event_seq.fetch_add(1, std::memory_order_relaxed);
+        LOGF_WARNING("[WATCH] seq={} READ  sub_828BF270 LR=0x{:08X} *0x{:08X}=0x{:08X}{} read_count={}",
+                     seq, ctx.lr, WATCH_ADDR, value, PoisonTag(value), read_count);
+    }
     __imp__sub_828BF270(ctx, base);
 }
 
@@ -231,20 +235,11 @@ PPC_FUNC_IMPL(__imp__sub_828C0848);
 PPC_FUNC_HOOK(sub_828C0848) { LogCallerEntry("C-828C0848", ctx.lr); __imp__sub_828C0848(ctx, base); LogCallerExit("C-828C0848"); }
 
 // ============================================================================
-// CONFLICT-RESOLUTION WATCHPOINT (poison-vs-color)
+// RESOLVED COLOR WATCHPOINT
 // ============================================================================
-// Agents 5/10 say *r4/*r5 is a stack-local legitimate ARGB color word.
-// Agents 9/11/13/14/15 say it's RAGE freed-heap poison from a CBaseDC UAF.
-//
-// This hook logs at every entry of sub_8227F5B8 / sub_8227F608:
-//   - LR (which caller)
-//   - the pointer value (r4 or r5)
-//   - whether the pointer is in plausible-stack range vs plausible-heap range
-//   - the dereferenced value (the alleged color OR poison)
-//   - tagging if the value matches 0xFFE1E1E1 (the contested signature)
-//
-// Plus polls dword_831E49B0 / dword_831E49DC (loading-screen handle slots
-// per agent 14) every 5ms to catch transitions.
+// 0xFFE1E1E1 at these sites is a legitimate ARGB color loaded through a
+// stack-local pointer, not freed-heap poison. Keep a small startup sample and
+// sparse milestones for regression diagnostics without flooding the log.
 // ============================================================================
 namespace {
 
@@ -252,7 +247,7 @@ constexpr uint32_t LOAD_HANDLE_A = 0x831E49B0;
 constexpr uint32_t LOAD_HANDLE_B = 0x831E49DC;
 
 const char* ColorTag(uint32_t v) {
-    if (v == 0xFFE1E1E1u) return " *** CONTESTED 0xFFE1E1E1 ***";
+    if (v == 0xFFE1E1E1u) return " (light gray)";
     if (v == 0xFFFFFFFFu) return " (white)";
     if (v == 0xFF000000u) return " (black)";
     if (v == 0xDEADBEEFu) return " (deadbeef)";
@@ -290,7 +285,7 @@ PPC_FUNC_HOOK(sub_8227F5B8) {
     uint32_t color_val = SafeReadGuestU32(color_ptr);
     uint32_t handle_a  = SafeReadGuestU32(LOAD_HANDLE_A);
     uint32_t handle_b  = SafeReadGuestU32(LOAD_HANDLE_B);
-    if (seq <= 50 || (seq % 1000) == 0 || color_val == 0xFFE1E1E1u) {
+    if (seq <= 50 || (seq % 1000) == 0) {
         LOGF_WARNING("[WATCH] F5B8 seq={} LR=0x{:08X} colorPtr=0x{:08X}{} *colorPtr=0x{:08X}{} loadHA=0x{:08X} loadHB=0x{:08X}",
                      seq, ctx.lr,
                      color_ptr, PtrRangeTag(color_ptr),
@@ -312,7 +307,7 @@ PPC_FUNC_HOOK(sub_8227F608) {
     uint32_t color_val = SafeReadGuestU32(color_ptr);
     uint32_t handle_a  = SafeReadGuestU32(LOAD_HANDLE_A);
     uint32_t handle_b  = SafeReadGuestU32(LOAD_HANDLE_B);
-    if (seq <= 50 || (seq % 1000) == 0 || color_val == 0xFFE1E1E1u) {
+    if (seq <= 50 || (seq % 1000) == 0) {
         LOGF_WARNING("[WATCH] F608 seq={} LR=0x{:08X} colorPtr=0x{:08X}{} *colorPtr=0x{:08X}{} loadHA=0x{:08X} loadHB=0x{:08X}",
                      seq, ctx.lr,
                      color_ptr, PtrRangeTag(color_ptr),

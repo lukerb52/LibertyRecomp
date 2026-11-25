@@ -72,8 +72,9 @@ def initialized(path):
     return (path / '.git').exists()
 
 
-def head(path):
-    return git(path, 'rev-parse', 'HEAD').stdout.decode().strip()
+def head(path, *, required=True):
+    result = git(path, 'rev-parse', '--verify', 'HEAD^{commit}', check=required)
+    return result.stdout.decode().strip() if result.returncode == 0 else None
 
 
 def read_json(path):
@@ -189,8 +190,13 @@ def inventory(root, *, require_ready=False):
         path = source_path(root, item['path'])
         entries.append((root, item))
         if initialized(path):
-            if require_ready and head(path) != item['revision']:
-                raise SetupError(f'{path} is at {head(path)}, expected {item["revision"]}. Run setup again.')
+            revision = head(path, required=False)
+            if revision is None:
+                if require_ready:
+                    raise SetupError(f'Dependency checkout is incomplete: {path}. Run tools/setup_repo.py.')
+                continue
+            if require_ready and revision != item['revision']:
+                raise SetupError(f'{path} is at {revision}, expected {item["revision"]}. Run setup again.')
             entries.extend(inventory(path, require_ready=require_ready))
         elif require_ready:
             raise SetupError(f'Dependency is not initialized: {path}. Run tools/setup_repo.py.')
@@ -247,6 +253,11 @@ class Patches:
             for item in entry['files']:
                 path = source_path(source, item['path'])
                 current = file_hash(path)
+                if current == 'absent' and item['before_sha256'] != 'absent' and item['after_sha256'] != 'absent':
+                    raise SetupError(f'Dependency source file is missing: {path}\n'
+                                     'The checkout may be incomplete after an interrupted submodule update. '
+                                     'Finish tools/setup_repo.py before configuring CMake. '
+                                     'If this deletion was intentional, preserve it before repairing the checkout.')
                 if current == item['after_sha256']:
                     continue
                 if current != item['before_sha256']:
@@ -290,7 +301,12 @@ class Patches:
                                      'Keep it as a backup outside this path, then rerun setup.')
                 continue
             relative = source.relative_to(self.root).as_posix()
-            revision = head(source)
+            revision = head(source, required=False)
+            if revision is None:
+                if any(path.name != '.git' for path in source.iterdir()) or git(source, 'ls-files', '--stage').stdout:
+                    raise SetupError(f'Incomplete dependency checkout contains local files: {source}\n'
+                                     'Preserve these files before rerunning setup.')
+                continue  # Interrupted clone; let Git finish the empty checkout.
             target = desired.get(relative)
             candidates = [entry for entry in reversed(history)
                           if entry['path'] == relative and entry['base_revision'] == revision]
@@ -330,7 +346,7 @@ class Patches:
         reverting = {path for path, _ in actions}
         for entry in self.entries:
             source = source_path(self.root, entry['path'])
-            if not initialized(source):
+            if not initialized(source) or head(source, required=False) is None:
                 continue
             for item in entry['files']:
                 path = source_path(source, item['path'])
@@ -385,6 +401,14 @@ def setup(root, patches, jobs=4, *, bootstrap=True):
             path.unlink()
         else:
             path.write_bytes(data)
+    # Git's recursive update cannot resolve the current revision of a clone
+    # interrupted before its first checkout. Preflight above verified these
+    # repositories have neither worktree files nor staged files to overwrite.
+    for parent, module in modules:
+        source = source_path(parent, module['path'])
+        if initialized(source) and head(source, required=False) is None:
+            git(source, 'fetch', '--depth', '1', 'origin', module['revision'], capture=False)
+            git(source, 'checkout', '--detach', module['revision'], capture=False)
     git(root, 'submodule', 'sync', '--recursive', capture=False)
     git(root, '-c', 'submodule.recurse=false', 'submodule', 'update', '--init',
         '--recursive', '--checkout', '--depth', '1', '--jobs', str(jobs), capture=False)

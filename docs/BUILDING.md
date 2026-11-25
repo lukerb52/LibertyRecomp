@@ -94,6 +94,19 @@ Setup also applies the reviewed dependency patches and bootstraps the bundled vc
 It can be rerun after an interrupted download. It does not pull the main repository,
 install OS packages, or change global Git settings.
 
+If Git reports that `shallow.lock` already exists, first ensure no setup or Git fetch
+is still running (including in another terminal). Only then move aside the specific
+lock file named in the error and rerun setup; do not remove locks while Git is active.
+A later missing dependency source error can mean setup stopped before checking out
+that dependency, not necessarily a local source edit. Preserve any real local changes
+before repairing it. Run configure and build only after setup succeeds, for example:
+
+```bash
+python3 tools/setup_repo.py &&
+  cmake --preset linux-release &&
+  cmake --build --preset linux-release --target LibertyRecomp
+```
+
 A recursive clone is supported too; run setup afterward to apply the patches. GitHub's
 **Download ZIP** omits submodule contents, so use Git for development.
 
@@ -147,6 +160,21 @@ For example, on Linux x64:
 ```bash
 cmake --preset linux-release
 cmake --build --preset linux-release --target LibertyRecomp
+```
+
+The Linux desktop renderer uses X11. On a Wayland desktop, install **XWayland**
+(`xorg-xwayland` on Arch, `xwayland` on Debian/Ubuntu); SDL defaults to the X11
+backend for this renderer. A Vulkan-capable graphics driver is required. Archive
+installation uses OpenSSL's crypto library and zlib, both discovered by CMake.
+
+You can test Linux archive decryption independently of the game data and SDK
+submodules (requires Clang, OpenSSL development headers, and zlib development headers):
+
+```bash
+clang++ -std=c++23 -ffunction-sections -fdata-sections \
+  tools/test_linux_rpf_crypto.cpp -Wl,--gc-sections -pthread -lcrypto -lz \
+  -o /tmp/test-linux-rpf
+/tmp/test-linux-rpf
 ```
 
 On macOS:

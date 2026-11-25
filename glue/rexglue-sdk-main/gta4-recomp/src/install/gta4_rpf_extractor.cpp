@@ -91,7 +91,10 @@ bool RangeWithin(uint64_t offset, uint64_t length, uint64_t size) {
 }
 
 bool IsCancelled(const RpfExtractionProgress& progress) {
-  return progress.cancel_requested && progress.cancel_requested->load(std::memory_order_relaxed);
+  if (progress.cancel_requested && progress.cancel_requested->load(std::memory_order_relaxed)) {
+    return true;
+  }
+  return progress.should_continue && !progress.should_continue();
 }
 
 std::optional<std::vector<uint8_t>> ReadExactFile(const std::filesystem::path& path,

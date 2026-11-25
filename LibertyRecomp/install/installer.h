@@ -89,14 +89,19 @@ struct Installer
     };
 
     struct DLCSource {
+        std::filesystem::path sourcePath;
+        DLC episode = DLC::Unknown;
         std::unique_ptr<VirtualFileSystem> sourceVfs;
         std::span<const FilePair> filePairs;
         const uint64_t *fileHashes = nullptr;
         std::string targetSubDirectory;
     };
 
-    struct Sources 
+    struct Sources
     {
+        // Base/update are installed by the shared SDK installer on supported hosts.
+        std::filesystem::path gameSourcePath;
+        std::filesystem::path updateSourcePath;
         std::unique_ptr<VirtualFileSystem> game;
         std::unique_ptr<VirtualFileSystem> update;  // Title update container
         std::vector<DLCSource> dlc;

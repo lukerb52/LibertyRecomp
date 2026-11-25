@@ -3,6 +3,8 @@
 
 #include "../cpu/ppc_context.h"
 
+#include <rex/runtime.h>
+#include <rex/system/function_dispatcher.h>
 #include <rex/system/xmemory.h>
 #include <rex/logging.h>
 #include <os/diag.h>
@@ -13,7 +15,7 @@
 
 // RMPTFX worker thread hook - suspend during Init to prevent signal_sem accumulation
 // This must be registered via InsertFunction (not PatchFuncMapping) because
-// the thread trampoline uses PPC_CALL_INDIRECT_FUNC which consults PPC_LOOKUP_FUNC
+// the thread trampoline uses the runtime function dispatcher.
 extern "C" void sub_821966D0_hook(PPCContext &ctx, uint8_t *base);
 
 static constexpr size_t AlignDown(size_t value, size_t alignment) noexcept
@@ -30,8 +32,28 @@ Memory::~Memory() = default;
 
 Memory::Memory()
 {
-    // Defer initialization to InitializeFromRexGlue().
-    // base remains nullptr until then — KiSystemStartup() checks for this.
+    // Normal startup assigns base from Runtime::virtual_membase() after Setup().
+    // InitializeFromRexGlue() is an optional standalone allocation path.
+}
+
+PPCFunc* Memory::FindFunction(uint32_t guest) const noexcept
+{
+    auto* runtime = rex::Runtime::instance();
+    if (!runtime || !base || runtime->virtual_membase() != base)
+        return nullptr;
+
+    auto* dispatcher = runtime->function_dispatcher();
+    return dispatcher ? dispatcher->GetFunction(guest) : nullptr;
+}
+
+void Memory::InsertFunction(uint32_t guest, PPCFunc* host)
+{
+    auto* runtime = rex::Runtime::instance();
+    if (!runtime || !base || runtime->virtual_membase() != base)
+        return;
+
+    if (auto* dispatcher = runtime->function_dispatcher())
+        dispatcher->SetFunction(guest, host);
 }
 
 void Memory::InitializeFromRexGlue()
@@ -48,7 +70,8 @@ void Memory::InitializeFromRexGlue()
     base = rex_memory_->virtual_membase();
     DIAG_EMIT("[Memory] RexGlue memory initialized: base=%p\n", (void*)base);
 
-    // Initialize the function table in guest memory for PPC_LOOKUP_FUNC
+    // Retain standalone table allocation/registration for memory ownership transfer.
+    // This does not register module metadata with a runtime dispatcher.
     if (!rex_memory_->InitializeFunctionTable(PPC_CODE_BASE, PPC_CODE_SIZE,
                                                PPC_IMAGE_BASE, PPC_IMAGE_SIZE)) {
         fprintf(stderr, "[Memory] FATAL: Failed to initialize RexGlue function table\n");
@@ -56,7 +79,7 @@ void Memory::InitializeFromRexGlue()
     }
 
     // Register all recompiled functions from the mapping table
-    // Uses RexGlue's SetFunction which writes to guest memory (PPC_LOOKUP_FUNC compatible)
+    // Memory::SetFunction registers entries in the allocated guest table.
     int count = 0;
     for (size_t i = 0; PPCFuncMappings[i].guest != 0; i++)
     {
@@ -69,16 +92,21 @@ void Memory::InitializeFromRexGlue()
     }
     DIAG_EMIT("[Memory] Registered %d recompiled functions via RexGlue\n", count);
 
-    // Shared init: manual stubs, vtable pre-population
+    // Runtime dispatch is authoritative. Standalone allocation alone cannot
+    // support lookup or hook installation; normal startup uses Runtime::Setup().
+    auto* runtime = rex::Runtime::instance();
+    if (!runtime || runtime->virtual_membase() != base || !runtime->function_dispatcher()) {
+        DIAG_EMIT("[Memory] No matching runtime dispatcher; lookup and hook installation unavailable\n");
+    }
     PopulateFunctionTableAndVtables();
 
-    DIAG_EMIT("[DIAG] Post-Populate GetFunction(0x82A692C8)=%p\n",
-              (void*)rex_memory_->GetFunction(0x82A692C8));
+    DIAG_EMIT("[DIAG] Post-Populate FindFunction(0x82A692C8)=%p\n",
+              (void*)FindFunction(0x82A692C8));
 }
 
 void Memory::PopulateFunctionTableAndVtables()
 {
-    // RMPTFX worker thread hook - patches PPC_LOOKUP_FUNC table (used by indirect calls)
+    // RMPTFX worker thread hook - patches the runtime dispatcher used by indirect calls.
     // PatchFuncMapping only patches PPCFuncMappings[] which is NOT consulted by
     // PPC_CALL_INDIRECT_FUNC in thread trampolines (sub_827DAE40)
     InsertFunction(0x821966D0, sub_821966D0_hook);

@@ -116,6 +116,7 @@ struct PublishItem {
   std::filesystem::path backup;
   bool had_destination = false;
   bool published = false;
+  bool destination_preserved = false;
 };
 
 std::string Lowercase(std::string_view value) {
@@ -478,7 +479,7 @@ bool CopyFileEntry(rex::filesystem::Entry* entry, const std::filesystem::path& d
   std::vector<uint8_t> buffer(kCopyBufferSize);
   size_t offset = 0;
   while (offset < entry->size()) {
-    if (progress.cancel_requested.load(std::memory_order_relaxed)) {
+    if (!progress.CheckContinue()) {
       error = "Installation was cancelled.";
       return false;
     }
@@ -579,7 +580,7 @@ bool CopyHostFile(const std::filesystem::path& source, const std::filesystem::pa
   }
   std::vector<char> buffer(kCopyBufferSize);
   while (input) {
-    if (progress.cancel_requested.load(std::memory_order_relaxed)) {
+    if (!progress.CheckContinue()) {
       error = "Installation was cancelled.";
       return false;
     }
@@ -774,7 +775,7 @@ bool PublishDirectories(std::vector<PublishItem>& items, std::string& error) {
         std::filesystem::remove_all(item->destination, rollback_error);
         rollback_error.clear();
       }
-      if (item->had_destination && std::filesystem::exists(item->backup, rollback_error)) {
+      if (item->destination_preserved && std::filesystem::exists(item->backup, rollback_error)) {
         rollback_error.clear();
         std::filesystem::rename(item->backup, item->destination, rollback_error);
       }
@@ -788,12 +789,6 @@ bool PublishDirectories(std::vector<PublishItem>& items, std::string& error) {
       rollback();
       return false;
     }
-    std::filesystem::remove_all(item.backup, fs_error);
-    if (fs_error) {
-      error = "Could not clear a stale installation backup: " + fs_error.message();
-      rollback();
-      return false;
-    }
     item.had_destination = std::filesystem::exists(item.destination, fs_error);
     if (fs_error) {
       error = "Could not inspect the previous installation: " + fs_error.message();
@@ -801,12 +796,31 @@ bool PublishDirectories(std::vector<PublishItem>& items, std::string& error) {
       return false;
     }
     if (item.had_destination) {
+      // Atomically reserve a new backup container. Never reuse/remove an old
+      // backup: it may contain user additions from a previous installation.
+      const auto backup_base = item.backup;
+      for (uint64_t suffix = 0;; ++suffix) {
+        auto container = backup_base;
+        container += "-" + std::to_string(suffix);
+        const bool reserved = std::filesystem::create_directory(container, fs_error);
+        if (reserved) {
+          item.backup = container / "previous";
+          break;
+        }
+        if (fs_error && fs_error != std::errc::file_exists) {
+          error = "Could not reserve an installation backup: " + fs_error.message();
+          rollback();
+          return false;
+        }
+        fs_error.clear();
+      }
       std::filesystem::rename(item.destination, item.backup, fs_error);
       if (fs_error) {
         error = "Could not preserve the previous installation: " + fs_error.message();
         rollback();
         return false;
       }
+      item.destination_preserved = true;
     }
   }
 
@@ -820,13 +834,11 @@ bool PublishDirectories(std::vector<PublishItem>& items, std::string& error) {
     item.published = true;
   }
 
-  for (auto& item : items) {
-    std::filesystem::remove_all(item.backup, fs_error);
-    if (fs_error) {
-      REXLOG_WARN("Installer: could not remove backup '{}': {}", item.backup.string(),
-                  fs_error.message());
+  for (const auto& item : items) {
+    if (item.had_destination) {
+      REXLOG_WARN("Installer: previous installation preserved at '{}' (may contain user files; remove manually only after review)",
+                  item.backup.string());
     }
-    fs_error.clear();
   }
   return true;
 }
@@ -885,6 +897,32 @@ bool ValidateInstalledPair(const std::filesystem::path& game_root, std::string& 
 
 const char* EpisodeDirectory(Episode episode) {
   return episode == Episode::kTlad ? "TLAD" : "TBOGT";
+}
+
+Result ValidateSelection(const Selection& selection) {
+  try {
+    if (selection.game_source.empty()) {
+      return {false, "Select the GTA IV USA retail 1.00 base-game source."};
+    }
+    const auto inspection = InspectGameSource(selection.game_source);
+    if (!inspection.supported()) {
+      return {false, inspection.rejection_reason};
+    }
+    if (selection.update_source.empty()) {
+      return {false, "Select the GTA IV v8 title update (default.xexp or its Xbox content package) before installing. The retail executable alone cannot run the generated game code."};
+    }
+    std::string error;
+    auto game = PrepareGameSource(selection.game_source, error);
+    if (!game) {
+      return {false, std::move(error)};
+    }
+    if (!PrepareUpdateSource(selection.update_source, game->xex_info, error)) {
+      return {false, std::move(error)};
+    }
+    return {true, {}};
+  } catch (const std::exception& exception) {
+    return {false, "Could not validate the selected game/update: " + std::string(exception.what())};
+  }
 }
 
 bool IsInstallReady(const std::filesystem::path& game_root, std::string* reason) {
@@ -1082,6 +1120,7 @@ Result Install(const Selection& selection, const std::filesystem::path& install_
         &progress.copied_bytes,
         &progress.total_bytes,
         &progress.cancel_requested,
+        [&progress]() { return progress.CheckContinue(); },
     };
     if (!ExtractGameArchives(staged_game, *aes_key_path, extraction_progress, result.error)) {
       return fail(std::move(result.error));
@@ -1117,6 +1156,10 @@ Result Install(const Selection& selection, const std::filesystem::path& install_
             result.error)) {
       return fail(std::move(result.error));
     }
+  }
+  // Final synchronous acknowledgement: no publish can race a UI confirmation.
+  if (!progress.CheckContinue()) {
+    return fail("Installation was cancelled.");
   }
   if (!PublishDirectories(publish, result.error)) {
     return fail(std::move(result.error));

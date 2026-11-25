@@ -102,7 +102,9 @@ target_include_directories(LibertyRecompLib PRIVATE
     "${REXGLUE_GTA4_RECOMP}/generated"
 )
 
-# RexGlue generated code needs access to RexGlue SDK headers
-if(TARGET rexcore)
-    target_link_libraries(LibertyRecompLib PRIVATE rexcore rexruntime rexkernel)
+# The shared runtime already embeds rexcore's OBJECT files. Linking rex::core
+# here would embed a second copy of its global state in the executable and
+# cause duplicate initialization/destruction on Linux.
+if(TARGET rexruntime)
+    target_link_libraries(LibertyRecompLib PRIVATE rex::runtime)
 endif()

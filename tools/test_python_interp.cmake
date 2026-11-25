@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.29)
+list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake/compat")
+find_package(PythonInterp 3 REQUIRED)
+if(NOT PYTHONINTERP_FOUND OR NOT PYTHON_VERSION_MAJOR EQUAL 3)
+    message(FATAL_ERROR "Legacy PythonInterp variables were not populated")
+endif()
+execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import sys; assert sys.version_info.major == 3"
+    RESULT_VARIABLE result)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Discovered Python interpreter could not run")
+endif()
+# A cached successful interpreter must not satisfy a later incompatible request.
+find_package(PythonInterp 2 EXACT QUIET)
+if(PYTHONINTERP_FOUND)
+    message(FATAL_ERROR "Legacy finder accepted an incompatible Python version")
+endif()
+message(STATUS "PythonInterp compatibility tests passed")

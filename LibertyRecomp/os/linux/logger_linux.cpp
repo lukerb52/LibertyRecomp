@@ -12,6 +12,23 @@ void os::logger::PlatformInitSinks()
     rex::AddSink(sink);
 }
 
+void os::logger::Init()
+{
+    if (!rex::diagnostics::IsEnabled(
+            rex::diagnostics::Category::kLogging)) return;
+    rex::LogConfig config;
+    config.log_to_console = false;  // PlatformInitSinks owns the console sink.
+    config.default_level = spdlog::level::trace;
+    config.flush_level = spdlog::level::trace;
+    rex::InitLogging(config);
+    PlatformInitSinks();
+}
+
+void os::logger::Shutdown()
+{
+    PlatformShutdownSinks();
+}
+
 void os::logger::PlatformShutdownSinks()
 {
     // spdlog handles sink cleanup on shutdown; nothing to do here.

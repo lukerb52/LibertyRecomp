@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 3.29)
 
+# Keep pinned dependencies using removed CMake finders compatible with CMake 4.
+list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/compat")
+
 set(LIBERTY_RECOMP_THIRDPARTY_ROOT ${CMAKE_SOURCE_DIR}/thirdparty)
 set(LIBERTY_RECOMP_TOOLS_ROOT ${CMAKE_SOURCE_DIR}/tools)
 set(CMAKE_CXX_STANDARD 23)
@@ -13,6 +16,28 @@ endif()
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+# Standalone regression configuration bypasses app dependencies and game assets.
+option(LIBERTY_RECOMP_FILE_PICKER_TEST_ONLY "Configure only the Linux GTK picker regression" OFF)
+function(liberty_add_linux_file_picker_test)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(FILE_PICKER_GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+    add_executable(liberty_test_linux_file_picker EXCLUDE_FROM_ALL tools/test_linux_file_picker.cpp)
+    target_link_libraries(liberty_test_linux_file_picker PRIVATE nfd::nfd PkgConfig::FILE_PICKER_GTK)
+    set_target_properties(liberty_test_linux_file_picker PROPERTIES
+        CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON DISABLE_PRECOMPILE_HEADERS ON)
+endfunction()
+if(LIBERTY_RECOMP_FILE_PICKER_TEST_ONLY)
+    project(LibertyFilePickerRegression LANGUAGES C CXX)
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" OR NFD_PORTAL)
+        message(FATAL_ERROR "Picker regression requires Linux with the NFD GTK backend")
+    endif()
+    set(NFD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(NFD_INSTALL OFF CACHE BOOL "" FORCE)
+    add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/nativefiledialog-extended")
+    liberty_add_linux_file_picker_test()
+    return()
+endif()
+
 # Check source prerequisites before project() enters the vcpkg toolchain.
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyPatches.cmake")
 liberty_require_dependency_sources("${CMAKE_CURRENT_SOURCE_DIR}")
@@ -20,6 +45,18 @@ if(APPLE AND NOT CMAKE_TOOLCHAIN_FILE)
     include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindHostLLVM.cmake")
 endif()
 project("LibertyRecomp-ALL")
+
+# Older Linux build trees cached an empty processor in CMakeSystem.cmake.
+# Repair it after project() reloads that file, before configuring the SDK.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_SYSTEM_PROCESSOR)
+    if(VCPKG_TARGET_TRIPLET MATCHES "^x64-")
+        set(CMAKE_SYSTEM_PROCESSOR x86_64)
+    elseif(VCPKG_TARGET_TRIPLET MATCHES "^arm64-")
+        set(CMAKE_SYSTEM_PROCESSOR aarch64)
+    else()
+        set(CMAKE_SYSTEM_PROCESSOR "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    endif()
+endif()
 
 # Reproduce the source fixes carried for pinned upstream dependencies.
 liberty_apply_dependency_patches("${CMAKE_CURRENT_SOURCE_DIR}")
@@ -225,6 +262,33 @@ endif()
 # RexGlue SDK integration
 if(USE_REXGLUE_RUNTIME)
     add_subdirectory("glue")
+    # Compile/link against the actual shared target so a legacy allocator
+    # collision fails here before reaching the SDK's CRT heap implementation.
+    add_executable(liberty_test_rex_o1heap EXCLUDE_FROM_ALL tools/test_rex_o1heap.c)
+    target_link_libraries(liberty_test_rex_o1heap PRIVATE o1heap)
+    set_target_properties(liberty_test_rex_o1heap PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON)
+
+    add_executable(liberty_test_image_patch EXCLUDE_FROM_ALL tools/test_linux_image_patch.cpp)
+    target_link_libraries(liberty_test_image_patch PRIVATE rex::runtime)
+    target_include_directories(liberty_test_image_patch PRIVATE "${CMAKE_SOURCE_DIR}/LibertyRecomp")
+    set_target_properties(liberty_test_image_patch PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+
+    # Synthetic disc fixtures exercise the real SDK filesystem and inspector,
+    # without linking the application or requiring any retail game content.
+    add_executable(liberty_test_source_selection EXCLUDE_FROM_ALL
+        tools/test_source_selection.cpp
+        "${REXSDK_DIR}/gta4-recomp/src/install/gta4_source_inspector.cpp")
+    target_link_libraries(liberty_test_source_selection PRIVATE rex::runtime xxHash::xxhash)
+    target_include_directories(liberty_test_source_selection PRIVATE
+        "${REXSDK_DIR}/gta4-recomp/src"
+        "${REXSDK_DIR}/thirdparty/crypto")
+    set_target_properties(liberty_test_source_selection PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+endif()
+
+# Exercise the real GTK backend without the application, PCH, or game data.
+# Run only under an isolated Xvfb server; the executable refuses other displays.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND TARGET nfd::nfd AND NOT NFD_PORTAL)
+    liberty_add_linux_file_picker_test()
 endif()
 
 # Include sub-projects.

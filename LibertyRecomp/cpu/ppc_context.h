@@ -10,8 +10,36 @@
   #define PPC_CODE_BASE  REX_CODE_BASE
   #define PPC_CODE_SIZE  REX_CODE_SIZE
 #endif
+#ifndef PPC_MEMORY_SIZE
+  #define PPC_MEMORY_SIZE REX_MEMORY_SIZE
+#endif
 #include <rex/ppc/context.h>
+#ifndef PPC_FUNC
+  #define PPC_FUNC(name) REX_FUNC(name)
+#endif
 #include <rex/ppc/function.h>
+
+// Legacy host hooks use these names; retain the SDK's address translation and
+// checked indirect dispatch rather than reintroducing the old table layout.
+#ifndef PPC_FUNC_IMPL
+  #define PPC_FUNC_IMPL(name) extern "C" REX_FUNC(name)
+#endif
+#ifndef PPC_FUNC_PROLOGUE
+  #define PPC_FUNC_PROLOGUE() REX_FUNC_PROLOGUE()
+#endif
+#ifndef PPC_CALL_INDIRECT_FUNC
+  #define PPC_CALL_INDIRECT_FUNC(address) REX_CALL_INDIRECT_FUNC(address)
+#endif
+#ifndef PPC_LOAD_U8
+  #define PPC_LOAD_U8(address) REX_LOAD_U8(address)
+  #define PPC_LOAD_U16(address) REX_LOAD_U16(address)
+  #define PPC_LOAD_U32(address) REX_LOAD_U32(address)
+  #define PPC_LOAD_U64(address) REX_LOAD_U64(address)
+  #define PPC_STORE_U8(address, value) REX_STORE_U8(address, value)
+  #define PPC_STORE_U16(address, value) REX_STORE_U16(address, value)
+  #define PPC_STORE_U32(address, value) REX_STORE_U32(address, value)
+  #define PPC_STORE_U64(address, value) REX_STORE_U64(address, value)
+#endif
 
 // SDK v0.7.4: Thread-local PPC context accessed via rex::runtime::current_ppc_context()
 #include <rex/system/thread_state.h>

@@ -1,0 +1,884 @@
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+[New Thread 0x7ffff3ac16c0 (LWP 4140) (id 2)]
+[New Thread 0x7ffff32c06c0 (LWP 4141) (id 3)]
+[New Thread 0x7ffff2abf6c0 (LWP 4142) (id 4)]
+[New Thread 0x7ffff1abe6c0 (LWP 4143) (id 5)]
+[New Thread 0x7fffe3fff6c0 (LWP 4144) (id 6)]
+[New Thread 0x7fffe2ffe6c0 (LWP 4145) (id 7)]
+[New Thread 0x7fffe1ffd6c0 (LWP 4146) (id 8)]
+[New Thread 0x7fffd3fff6c0 (LWP 4147) (id 9)]
+[New Thread 0x7fffd2ffe6c0 (LWP 4148) (id 10)]
+[New Thread 0x7ffff0a4c6c0 (LWP 4149) (id 11)]
+[New Thread 0x7fffe0ffc6c0 (LWP 4150) (id 12)]
+[New Thread 0x7fffb3bff6c0 (LWP 4160) (id 13)]
+[New Thread 0x7fffb33fe6c0 (LWP 4161) (id 14)]
+[New Thread 0x7fffb2bfd6c0 (LWP 4218) (id 15)]
+[New Thread 0x7fffb23fc6c0 (LWP 4219) (id 16)]
+[New Thread 0x7fffb1bfb6c0 (LWP 4220) (id 17)]
+[New Thread 0x7fffb13fa6c0 (LWP 4221) (id 18)]
+[New Thread 0x7fffb0bf96c0 (LWP 4222) (id 19)]
+[New Thread 0x7fffabfff6c0 (LWP 4223) (id 20)]
+[New Thread 0x7fffab7fe6c0 (LWP 4224) (id 21)]
+[New Thread 0x7fffaaffd6c0 (LWP 4225) (id 22)]
+[New Thread 0x7fffaa7fc6c0 (LWP 4226) (id 23)]
+[New Thread 0x7fffa9ffb6c0 (LWP 4227) (id 24)]
+[New Thread 0x7fffa97fa6c0 (LWP 4228) (id 25)]
+[New Thread 0x7fffa8ff96c0 (LWP 4229) (id 26)]
+[New Thread 0x7fffa3fff6c0 (LWP 4230) (id 27)]
+[Thread 0x7fffa3fff6c0 (LWP 4230) (id 27) exited]
+[New Thread 0x7fffa37fe6c0 (LWP 4238) (id 28)]
+[New Thread 0x7fffa141c6c0 (LWP 4239) (id 29)]
+[New Thread 0x7fffa041b6c0 (LWP 4240) (id 30)]
+[New Thread 0x7fff9f41a6c0 (LWP 4241) (id 31)]
+[New Thread 0x7fff9e4196c0 (LWP 4242) (id 32)]
+[New Thread 0x7fff9d4186c0 (LWP 4248) (id 33)]
+[New Thread 0x7fff9c4176c0 (LWP 4249) (id 34)]
+[New Thread 0x7fff9b4166c0 (LWP 4250) (id 35)]
+[New Thread 0x7fff9a4156c0 (LWP 4251) (id 36)]
+[New Thread 0x7fff994146c0 (LWP 4252) (id 37)]
+[New Thread 0x7fff984136c0 (LWP 4253) (id 38)]
+[New Thread 0x7fff974126c0 (LWP 4254) (id 39)]
+[New Thread 0x7fff944116c0 (LWP 4255) (id 40)]
+[New Thread 0x7fff934106c0 (LWP 4256) (id 41)]
+[New Thread 0x7fff92c0f6c0 (LWP 4257) (id 42)]
+[New Thread 0x7fff9240e6c0 (LWP 4258) (id 43)]
+[New Thread 0x7fff91c0d6c0 (LWP 4259) (id 44)]
+[New Thread 0x7fff9140c6c0 (LWP 4260) (id 45)]
+[New Thread 0x7fff90c0b6c0 (LWP 4261) (id 46)]
+[New Thread 0x7fff8fc0a6c0 (LWP 4262) (id 47)]
+[New Thread 0x7fff8ec096c0 (LWP 4267) (id 48)]
+[New Thread 0x7fff8dc086c0 (LWP 4268) (id 49)]
+[New Thread 0x7fff8cc076c0 (LWP 4269) (id 50)]
+[New Thread 0x7fff8bc066c0 (LWP 4270) (id 51)]
+[New Thread 0x7fff8ac056c0 (LWP 4271) (id 52)]
+[New Thread 0x7fff89c046c0 (LWP 4272) (id 53)]
+[New Thread 0x7fff88c036c0 (LWP 4273) (id 54)]
+[New Thread 0x7fff87c026c0 (LWP 4274) (id 55)]
+[New Thread 0x7fff86c016c0 (LWP 4275) (id 56)]
+
+Thread 1 "LibertyRecomp" received signal SIGINT, Interrupt.
+0x00007ffff4a9ffd2 in ?? () from /usr/lib/libc.so.6
+rax            0xfffffffffffffdfc  -516
+rbx            0x7ffff3fc4b68      140737286785896
+rcx            0x7ffff4a9ffd2      140737298169810
+rdx            0x7fffffffa7a0      140737488332704
+rsi            0x0                 0
+rdi            0x0                 0
+rbp            0x1                 0x1
+rsp            0x7fffffffa748      0x7fffffffa748
+r8             0x0                 0
+r9             0x0                 0
+r10            0x7fffffffa790      140737488332688
+r11            0x200246            2097734
+r12            0x5555595eed58      93825059974488
+r13            0x7ffff4aeeb70      140737298492272
+r14            0x7fffffffa7a0      140737488332704
+r15            0x7fffffffa790      140737488332688
+rip            0x7ffff4a9ffd2      0x7ffff4a9ffd2
+eflags         0x200246            [ PF ZF IF ID ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+k0             0x4002              16386
+k1             0x0                 0
+k2             0x7ffff             524287
+k3             0x0                 0
+k4             0x8888              34952
+k5             0x3b0fb1d8          990884312
+k6             0x3b000             241664
+k7             0x0                 0
+fs_base        0x7ffff3fc6280      140737286791808
+gs_base        0x0                 0
+=> 0x7ffff4a9ffd2:	ret
+   0x7ffff4a9ffd3:	cs nopw 0x0(%rax,%rax,1)
+   0x7ffff4a9ffdd:	nopl   (%rax)
+   0x7ffff4a9ffe0:	endbr64
+   0x7ffff4a9ffe4:	sub    $0x8,%rsp
+   0x7ffff4a9ffe8:	mov    $0x1,%edi
+   0x7ffff4a9ffed:	call   0x7ffff4b00f40 <sched_get_priority_max>
+   0x7ffff4a9fff2:	mov    $0x1,%edi
+   0x7ffff4a9fff7:	mov    %eax,0x17e0c3(%rip)        # 0x7ffff4c1e0c0
+   0x7ffff4a9fffd:	call   0x7ffff4b00f70 <sched_get_priority_min>
+   0x7ffff4aa0002:	mov    %eax,0x17e0bc(%rip)        # 0x7ffff4c1e0c4
+   0x7ffff4aa0008:	add    $0x8,%rsp
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x00005555558c5c2a in SDL_Delay_REAL ()
+#4  0x00005555569bb6cb in main ()
+
+Thread 56 (Thread 0x7fff86c016c0 (LWP 4275) "XThread86C016C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x00005555570c5c0e in sub_821BA088 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 55 (Thread 0x7fff87c026c0 (LWP 4274) "XThread87C026C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x000055555721f050 in sub_82212F38 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 54 (Thread 0x7fff88c036c0 (LWP 4273) "XThread88C036C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96dee in pthread_cond_clockwait () at /usr/lib/libc.so.6
+#3  0x00007ffff685b6b5 in bool std::condition_variable::wait_for<long, std::ratio<1l, 1000l>, rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >)::{lambda()#1}>(std::unique_lock<std::mutex>&, std::chrono::duration<long, std::ratio<1l, 1000l> > const&, rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >)::{lambda()#1}) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff685790a in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b063a9 in sub_82849820 ()
+#10 0x00005555584c5d80 in sub_8269A100 ()
+#11 0x00005555584ca10b in sub_8269B0A8 ()
+#12 0x0000555558b067ca in sub_82849940 ()
+#13 0x00005555592a0612 in sub_82A21600 ()
+#14 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#17 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#18 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 53 (Thread 0x7fff89c046c0 (LWP 4272) "XThread89C046C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96dee in pthread_cond_clockwait () at /usr/lib/libc.so.6
+#3  0x00007ffff685b6b5 in bool std::condition_variable::wait_for<long, std::ratio<1l, 1000l>, rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >)::{lambda()#1}>(std::unique_lock<std::mutex>&, std::chrono::duration<long, std::ratio<1l, 1000l> > const&, rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >)::{lambda()#1}) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff685790a in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b063a9 in sub_82849820 ()
+#10 0x0000555557fa5be4 in sub_82555FF8 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 52 (Thread 0x7fff8ac056c0 (LWP 4271) "XThread8AC056C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b4a6ed in sub_8285D368 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 51 (Thread 0x7fff8bc066c0 (LWP 4270) "XThread8BC066C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b4a6ed in sub_8285D368 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 50 (Thread 0x7fff8cc076c0 (LWP 4269) "XThread8CC076C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x00005555588339d8 in sub_82798038 ()
+#11 0x0000555558835f55 in sub_827989F8 ()
+#12 0x0000555558b067ca in sub_82849940 ()
+#13 0x00005555592a0612 in sub_82A21600 ()
+#14 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#17 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#18 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 49 (Thread 0x7fff8dc086c0 (LWP 4268) "XThread8DC086C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x00005555588339d8 in sub_82798038 ()
+#11 0x0000555558835f55 in sub_827989F8 ()
+#12 0x0000555558b067ca in sub_82849940 ()
+#13 0x00005555592a0612 in sub_82A21600 ()
+#14 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#17 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#18 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 48 (Thread 0x7fff8ec096c0 (LWP 4267) "XThread8EC096C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x00005555588339d8 in sub_82798038 ()
+#11 0x0000555558835f55 in sub_827989F8 ()
+#12 0x0000555558b067ca in sub_82849940 ()
+#13 0x00005555592a0612 in sub_82A21600 ()
+#14 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#17 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#18 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 47 (Thread 0x7fff8fc0a6c0 (LWP 4262) "XThread8FC0A6C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555557436299 in sub_82299490 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 46 (Thread 0x7fff90c0b6c0 (LWP 4261) "XThread90C0B6C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x00007ffff6bb867c in rex::system::XThread::Delay(unsigned int, unsigned int, unsigned long) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff6e9b1ba in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl28KeDelayExecutionThread_entryEjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x0000555559288490 in sub_82A1A200 ()
+#6  0x0000555558deb80e in sub_82902420 ()
+#7  0x0000555558dec04c in sub_82902728 ()
+#8  0x0000555558b067ca in sub_82849940 ()
+#9  0x00005555592a0612 in sub_82A21600 ()
+#10 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#12 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#13 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#14 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 45 (Thread 0x7fff9140c6c0 (LWP 4260) "SDLAudioP19"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b1efa8 in epoll_wait () at /usr/lib/libc.so.6
+#2  0x00007fffd1fed069 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#3  0x00007fffd1fd6925 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#4  0x00007fffd0db8d41 in ??? () at /usr/lib/libpipewire-0.3.so.0
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 44 (Thread 0x7fff91c0d6c0 (LWP 4259) "module-rt"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b1efa8 in epoll_wait () at /usr/lib/libc.so.6
+#2  0x00007fffd1fed069 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#3  0x00007fffd1fd6925 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#4  0x00007fffd0db8d41 in ??? () at /usr/lib/libpipewire-0.3.so.0
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 43 (Thread 0x7fff9240e6c0 (LWP 4258) "module-rt"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b1efa8 in epoll_wait () at /usr/lib/libc.so.6
+#2  0x00007fffd1fed069 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#3  0x00007fffd1fd6925 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#4  0x00007fffd0db8d41 in ??? () at /usr/lib/libpipewire-0.3.so.0
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 42 (Thread 0x7fff92c0f6c0 (LWP 4257) "SDLPwAudioPlug"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b1efa8 in epoll_wait () at /usr/lib/libc.so.6
+#2  0x00007fffd1fed069 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#3  0x00007fffd1fd6925 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#4  0x00007fffd0db8d41 in ??? () at /usr/lib/libpipewire-0.3.so.0
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 41 (Thread 0x7fff934106c0 (LWP 4256) "module-rt"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b1efa8 in epoll_wait () at /usr/lib/libc.so.6
+#2  0x00007fffd1fed069 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#3  0x00007fffd1fd6925 in ??? () at /usr/lib/spa-0.2/support/libspa-support.so
+#4  0x00007fffd0db8d41 in ??? () at /usr/lib/libpipewire-0.3.so.0
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 40 (Thread 0x7fff944116c0 (LWP 4255) "XThread944116C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e9c367 in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl27KeWaitForSingleObject_entryENS_9MappedPtrIvEEjjjNS4_INS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x0000555557022fed in sub_821909D0 ()
+#8  0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#9  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#10 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#12 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 39 (Thread 0x7fff974126c0 (LWP 4254) "XThread974126C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x00007ffff6bb867c in rex::system::XThread::Delay(unsigned int, unsigned int, unsigned long) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff6e9b1ba in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl28KeDelayExecutionThread_entryEjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x0000555559288490 in sub_82A1A200 ()
+#6  0x000055555821e0ae in sub_825FBB68 ()
+#7  0x0000555558b067ca in sub_82849940 ()
+#8  0x00005555592a0612 in sub_82A21600 ()
+#9  0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#10 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#12 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#13 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 38 (Thread 0x7fff984136c0 (LWP 4253) "XThread984136C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x00005555591fef8e in sub_829FF398 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 37 (Thread 0x7fff994146c0 (LWP 4252) "XThread994146C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x00005555591fef8e in sub_829FF398 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 36 (Thread 0x7fff9a4156c0 (LWP 4251) "XThread9A4156C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x0000555556b1728b in Video::Present() ()
+#4  0x0000555556b1ab98 in sub_82A467D8 ()
+#5  0x0000555558cf6c1e in sub_828BF420 ()
+#6  0x0000555558cfeacf in sub_828C15C8 ()
+#7  0x0000555558d0ddc6 in sub_828C5BA0 ()
+#8  0x0000555556f04ea6 in sub_82144188 ()
+#9  0x00005555570b486b in sub_821B5B20 ()
+#10 0x00005555570b9cc6 in sub_821B6F18 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 35 (Thread 0x7fff9b4166c0 (LWP 4250) "XThread9B4166C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b4a6ed in sub_8285D368 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 34 (Thread 0x7fff9c4176c0 (LWP 4249) "XThread9C4176C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b4a6ed in sub_8285D368 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 33 (Thread 0x7fff9d4186c0 (LWP 4248) "XThread9D4186C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b4a6ed in sub_8285D368 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 32 (Thread 0x7fff9e4196c0 (LWP 4242) "XThread9E4196C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e9c367 in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl27KeWaitForSingleObject_entryENS_9MappedPtrIvEEjjjNS4_INS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x0000555559349feb in sub_82A4F0E0 ()
+#8  0x00005555592a0612 in sub_82A21600 ()
+#9  0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#10 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#12 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#13 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 31 (Thread 0x7fff9f41a6c0 (LWP 4241) "XThread9F41A6C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96dee in pthread_cond_clockwait () at /usr/lib/libc.so.6
+#3  0x00007ffff685b6b5 in bool std::condition_variable::wait_for<long, std::ratio<1l, 1000l>, rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >)::{lambda()#1}>(std::unique_lock<std::mutex>&, std::chrono::duration<long, std::ratio<1l, 1000l> > const&, rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >)::{lambda()#1}) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff685790a in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e9c367 in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl27KeWaitForSingleObject_entryENS_9MappedPtrIvEEjjjNS4_INS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x0000555559349feb in sub_82A4F0E0 ()
+#8  0x00005555592a0612 in sub_82A21600 ()
+#9  0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#10 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#12 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#13 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 30 (Thread 0x7fffa041b6c0 (LWP 4240) "XThreadA041B6C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b0f076 in sub_8284C5E8 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 29 (Thread 0x7fffa141c6c0 (LWP 4239) "XThreadA141C6C0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce0bf in rex::system::XObject::Wait(unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e93fd9 in rex::kernel::xboxkrnl::NtWaitForSingleObjectEx_entry(unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c48f in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl29NtWaitForSingleObjectEx_entryEjjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x0000555559288b4a in sub_82A1A450 ()
+#9  0x0000555558b06301 in sub_828497D8 ()
+#10 0x0000555558b0f076 in sub_8284C5E8 ()
+#11 0x0000555558b067ca in sub_82849940 ()
+#12 0x00005555592a0612 in sub_82A21600 ()
+#13 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#16 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#17 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 28 (Thread 0x7fffa37fe6c0 (LWP 4238) "Main XThread (F"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x00007ffff6bb867c in rex::system::XThread::Delay(unsigned int, unsigned int, unsigned long) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff6e9b1ba in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl28KeDelayExecutionThread_entryEjjNS_9MappedPtrINS_12endian_storeImLSt6endian4321EEEEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x0000555559288490 in sub_82A1A200 ()
+#6  0x0000555556ef4a79 in sub_82140088 ()
+#7  0x00005555570acc7c in sub_821B3598 ()
+#8  0x0000555558afee3a in sub_828474B8 ()
+#9  0x000055555925c000 in xstart ()
+#10 0x00007ffff6bb4f49 in rex::system::XThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#12 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#13 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#14 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 26 (Thread 0x7fffa8ff96c0 (LWP 4229) "LibertyRecomp"):
+#0  0x00007ffff4b1c7ad in syscall () at /usr/lib/libc.so.6
+#1  0x00007ffff4ff2ad2 in std::__detail::__wait_impl(void const*, std::__detail::__wait_args_base&) () at /usr/lib/libstdc++.so.6
+#2  0x0000555556b31856 in PipelineTaskConsumerThread() ()
+#3  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#5  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 25 (Thread 0x7fffa97fa6c0 (LWP 4228) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 24 (Thread 0x7fffa9ffb6c0 (LWP 4227) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 23 (Thread 0x7fffaa7fc6c0 (LWP 4226) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 22 (Thread 0x7fffaaffd6c0 (LWP 4225) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 21 (Thread 0x7fffab7fe6c0 (LWP 4224) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 20 (Thread 0x7fffabfff6c0 (LWP 4223) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 19 (Thread 0x7fffb0bf96c0 (LWP 4222) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 18 (Thread 0x7fffb13fa6c0 (LWP 4221) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b30fb8 in PipelineCompilerThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 17 (Thread 0x7fffb1bfb6c0 (LWP 4220) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a9fed8 in ??? () at /usr/lib/libc.so.6
+#3  0x0000555556b264b8 in RenderThread() ()
+#4  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#5  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#6  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 16 (Thread 0x7fffb23fc6c0 (LWP 4219) "WSI swapchain e"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b0f322 in poll () at /usr/lib/libc.so.6
+#2  0x00007ffff546e1eb in ??? () at /usr/lib/libxcb.so.1
+#3  0x00007ffff547025b in xcb_wait_for_special_event () at /usr/lib/libxcb.so.1
+#4  0x00007fffd0fa60d6 in ??? () at /usr/lib/libvulkan_radeon.so
+#5  0x00007fffd11af92c in ??? () at /usr/lib/libvulkan_radeon.so
+#6  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#7  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 15 (Thread 0x7fffb2bfd6c0 (LWP 4218) "WSI swapchain q"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007fffd116802e in ??? () at /usr/lib/libvulkan_radeon.so
+#4  0x00007fffd0fa4a48 in ??? () at /usr/lib/libvulkan_radeon.so
+#5  0x00007fffd11af92c in ??? () at /usr/lib/libvulkan_radeon.so
+#6  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#7  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 14 (Thread 0x7fffb33fe6c0 (LWP 4161) "Liberty:disk$0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007fffd11af9be in ??? () at /usr/lib/libvulkan_radeon.so
+#4  0x00007fffd117893d in ??? () at /usr/lib/libvulkan_radeon.so
+#5  0x00007fffd11af92c in ??? () at /usr/lib/libvulkan_radeon.so
+#6  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#7  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 13 (Thread 0x7fffb3bff6c0 (LWP 4160) "Liberty:disk$0"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007fffd11af9be in ??? () at /usr/lib/libvulkan_radeon.so
+#4  0x00007fffd117893d in ??? () at /usr/lib/libvulkan_radeon.so
+#5  0x00007fffd11af92c in ??? () at /usr/lib/libvulkan_radeon.so
+#6  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#7  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 12 (Thread 0x7fffe0ffc6c0 (LWP 4150) "libusb"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b0f322 in poll () at /usr/lib/libc.so.6
+#2  0x00007ffff0aaacee in ??? () at /usr/lib/libusb-1.0.so.0
+#3  0x00007ffff0aabde8 in libusb_handle_events_timeout_completed () at /usr/lib/libusb-1.0.so.0
+#4  0x00007ffff0aabe4f in libusb_handle_events () at /usr/lib/libusb-1.0.so.0
+#5  0x000055555587350e in event_thread.llvm ()
+#6  0x0000555555873562 in RunInputThread.llvm.4364606243164279538 ()
+#7  0x00005555558c2762 in SDL_RunThread ()
+#8  0x0000555555a63792 in RunThread.llvm.3266285097523298146 ()
+#9  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#10 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 11 (Thread 0x7ffff0a4c6c0 (LWP 4149) "libusb_event"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b0f322 in poll () at /usr/lib/libc.so.6
+#2  0x00007ffff0ab1fbc in ??? () at /usr/lib/libusb-1.0.so.0
+#3  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#4  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 10 (Thread 0x7fffd2ffe6c0 (LWP 4148) "Audio Worker (F"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x00007ffff68589a8 in rex::thread::PosixConditionBase::WaitMultiple(std::vector<rex::thread::PosixConditionBase*, std::allocator<rex::thread::PosixConditionBase*> >&&, bool, std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#4  0x00007ffff6857fda in rex::thread::WaitMultiple(rex::thread::WaitHandle**, unsigned long, bool, bool, std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bce4c4 in rex::system::XObject::WaitMultiple(unsigned int, rex::system::XObject**, unsigned int, unsigned int, unsigned int, unsigned int, unsigned long*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6e9454c in rex::kernel::xboxkrnl::KeWaitForMultipleObjects_entry(unsigned int, rex::MappedPtr<rex::endian_store<unsigned int, (std::endian)4321> >, unsigned int, unsigned int, unsigned int, unsigned int, rex::MappedPtr<rex::endian_store<unsigned long, (std::endian)4321> >, rex::MappedPtr<void>) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6e9c595 in _ZN3rex3ppc19HostToGuestFunctionITnDaXadL_ZNS_6kernel8xboxkrnl30KeWaitForMultipleObjects_entryEjNS_9MappedPtrINS_12endian_storeIjLSt6endian4321EEEEEjjjjNS4_INS5_ImLS6_4321EEEEENS4_IvEEEEEEvR10PPCContextPh () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00005555570248dd in sub_821910D0 ()
+#9  0x00007ffff6c35ccb in rex::runtime::FunctionDispatcher::Execute(rex::runtime::ThreadState*, unsigned int) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#10 0x00007ffff6989f00 in rex::audio::AudioSystem::WorkerThreadMain() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#11 0x00007ffff698f705 in std::_Function_handler<int (), rex::audio::AudioSystem::Setup(rex::system::KernelState*)::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#12 0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#13 0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#14 0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#15 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#16 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 9 (Thread 0x7fffd3fff6c0 (LWP 4147) "XMA Decoder (F8"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff68578d9 in rex::thread::PosixConditionBase::Wait(std::chrono::duration<long, std::ratio<1l, 1000l> >) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6997929 in rex::audio::XmaDecoder::WorkerThreadMain() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff69997e5 in std::_Function_handler<int (), rex::audio::XmaDecoder::Setup(rex::system::KernelState*)::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#9  0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#10 0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#11 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 8 (Thread 0x7fffe1ffd6c0 (LWP 4146) "Kernel File IO "):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff6b8e79a in std::_Function_handler<int (), rex::system::KernelState::StartHostIoWorkers()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#9  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 7 (Thread 0x7fffe2ffe6c0 (LWP 4145) "Kernel File IO "):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff6b8e79a in std::_Function_handler<int (), rex::system::KernelState::StartHostIoWorkers()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#9  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 6 (Thread 0x7fffe3fff6c0 (LWP 4144) "Kernel File IO "):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff6b8e79a in std::_Function_handler<int (), rex::system::KernelState::StartHostIoWorkers()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#9  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 5 (Thread 0x7ffff1abe6c0 (LWP 4143) "Kernel File IO "):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff6b8e79a in std::_Function_handler<int (), rex::system::KernelState::StartHostIoWorkers()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#9  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 4 (Thread 0x7ffff2abf6c0 (LWP 4142) "Kernel Host Tas"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4a9410a in ??? () at /usr/lib/libc.so.6
+#2  0x00007ffff4a96960 in pthread_cond_wait () at /usr/lib/libc.so.6
+#3  0x00007ffff4ee0c71 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff6b8e28e in void std::_V2::condition_variable_any::wait<std::unique_lock<std::recursive_mutex> >(std::unique_lock<std::recursive_mutex>&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#5  0x00007ffff6b8d491 in std::_Function_handler<int (), rex::system::KernelState::StartHostTaskWorker()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#6  0x00007ffff6bbbfc3 in rex::system::XHostThread::Execute() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#7  0x00007ffff6bbcca4 in std::_Function_handler<void (), rex::system::XThread::Create()::$_0>::_M_invoke(std::_Any_data const&) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#8  0x00007ffff685934c in rex::thread::PosixCondition<rex::thread::Thread>::ThreadStartRoutine(void*) () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#9  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#10 0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 3 (Thread 0x7ffff32c06c0 (LWP 4141) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4b1c18a in select () at /usr/lib/libc.so.6
+#2  0x00007ffff6bf662f in rex::system::xam::LanSessionDirectory::WorkerMain() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#3  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#4  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#5  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 2 (Thread 0x7ffff3ac16c0 (LWP 4140) "LibertyRecomp"):
+#0  0x00007ffff4b0106b in sched_yield () at /usr/lib/libc.so.6
+#1  0x00007ffff68437df in std::thread::_State_impl<std::thread::_Invoker<std::tuple<rex::thread::TimerQueue::TimerQueue()::{lambda(std::stop_token)#1}, std::stop_token> > >::_M_run() () at /home/clmb/.local/src/LibertyRecomp/glue/rexglue-sdk-main/out/linux-amd64/librexruntime.so
+#2  0x00007ffff4eeb996 in ??? () at /usr/lib/libstdc++.so.6
+#3  0x00007ffff4a9746e in ??? () at /usr/lib/libc.so.6
+#4  0x00007ffff4b1eb0c in ??? () at /usr/lib/libc.so.6
+
+Thread 1 (Thread 0x7ffff3fc6280 (LWP 4137) "LibertyRecomp"):
+#0  0x00007ffff4a9ffd2 in ??? () at /usr/lib/libc.so.6
+#1  0x00007ffff4ae2c2a in clock_nanosleep () at /usr/lib/libc.so.6
+#2  0x00007ffff4aeeb87 in nanosleep () at /usr/lib/libc.so.6
+#3  0x00005555558c5c2a in SDL_Delay_REAL ()
+#4  0x00005555569bb6cb in main ()
+[Inferior 1 (process 4137) killed]

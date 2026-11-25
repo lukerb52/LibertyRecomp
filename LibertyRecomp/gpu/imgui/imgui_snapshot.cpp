@@ -1,5 +1,7 @@
 #include "imgui_snapshot.h"
 
+#include <imgui_internal.h>
+
 #include <locale/locale.h>
 #ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
 #include <res/font/im_font_atlas.bin.h>
@@ -207,8 +209,27 @@ ImFont* ImFontAtlasSnapshot::GetFont(const char* name)
     }
 
 #ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    assert(false && "Unable to locate equivalent font in the atlas file.");
-#endif
+    // A snapshot already has an uploaded texture: never add fonts to it here.
+    assert(!fontAtlas->Fonts.empty());
+    return fontAtlas->Fonts[0];
+#else
+    ImFontConfig config;
+    // Keep the requested name even for a fallback, so subsequent lookups reuse
+    // this font instead of changing the atlas after its texture was uploaded.
+    ImFormatString(config.Name, IM_ARRAYSIZE(config.Name), "%s", name);
+    const ImWchar* glyphRanges = g_glyphRanges.empty()
+        ? fontAtlas->GetGlyphRangesDefault() : g_glyphRanges.data();
 
-    return fontAtlas->AddFontFromFileTTF(name, 24.0f, nullptr, g_glyphRanges.data());
+    // AddFontFromFileTTF asserts on missing files in debug builds. Load through
+    // ImGui's file API first (including any platform font resolution), and use
+    // its embedded font when fresh installs have no game/system font available.
+    size_t dataSize = 0;
+    void* data = ImFileLoadToMemory(name, "rb", &dataSize);
+    if (data != nullptr && dataSize > 100 && dataSize <= INT_MAX)
+        return fontAtlas->AddFontFromMemoryTTF(data, static_cast<int>(dataSize), 24.0f, &config, glyphRanges);
+    IM_FREE(data);
+
+    config.SizePixels = 24.0f;
+    return fontAtlas->AddFontDefault(&config);
+#endif
 }

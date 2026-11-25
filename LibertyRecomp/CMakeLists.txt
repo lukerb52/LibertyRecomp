@@ -463,6 +463,12 @@ if (NOT (LIBERTY_RECOMP_PS4 OR LIBERTY_RECOMP_NX))
     list(APPEND LIBERTY_RECOMP_THIRDPARTY_SOURCES
         "${LIBERTY_RECOMP_THIRDPARTY_ROOT}/imgui/backends/imgui_impl_sdl3.cpp"
     )
+    # This pinned backend predates SDL3's bool rename. Keep its compatibility
+    # aliases local and avoid reusing the application's incompatible SDL PCH.
+    set_source_files_properties(
+        "${LIBERTY_RECOMP_THIRDPARTY_ROOT}/imgui/backends/imgui_impl_sdl3.cpp"
+        PROPERTIES COMPILE_DEFINITIONS SDL_ENABLE_OLD_NAMES SKIP_PRECOMPILE_HEADERS ON
+    )
 endif()
 
 set(LIBERTY_RECOMP_THIRDPARTY_INCLUDES
@@ -1659,12 +1665,28 @@ if(USE_REXGLUE_RUNTIME)
     target_compile_definitions(LibertyRecomp PRIVATE REX_USE_FULL_SDK)
     # Suppress rexkernels Vd*/Xam* PPC_HOOKs - Liberty owns those directly
     target_compile_definitions(LibertyRecomp PRIVATE LIBERTY_RECOMP_OVERRIDES)
-    target_link_libraries(LibertyRecomp PRIVATE
-        rex::core
-        rex::system
-        rex::kernel
-        rex::audio
-    )
+    # rexruntime owns core/audio OBJECT libraries; embedding them again in the
+    # host duplicates singleton state and causes ELF teardown corruption.
+    target_link_libraries(LibertyRecomp PRIVATE rex::runtime)
+    # Only the backend is shared; keep the legacy wizard and DLC layout.
+    if(NOT (LIBERTY_RECOMP_PS4 OR LIBERTY_RECOMP_NX OR ANDROID))
+        set(LIBERTY_INSTALL_SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/rexglue-sdk-main")
+        set(LIBERTY_INSTALL_SHARED_SOURCES
+            "${LIBERTY_INSTALL_SDK_ROOT}/gta4-recomp/src/install/gta4_installer.cpp"
+            "${LIBERTY_INSTALL_SDK_ROOT}/gta4-recomp/src/install/gta4_source_inspector.cpp"
+            "${LIBERTY_INSTALL_SDK_ROOT}/gta4-recomp/src/install/gta4_rpf_extractor.cpp"
+            "${LIBERTY_INSTALL_SDK_ROOT}/thirdparty/crypto/rijndael-alg-fst.c")
+        target_sources(LibertyRecomp PRIVATE ${LIBERTY_INSTALL_SHARED_SOURCES})
+        set_source_files_properties(${LIBERTY_INSTALL_SHARED_SOURCES}
+            PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+        target_include_directories(LibertyRecomp PRIVATE
+            "${LIBERTY_INSTALL_SDK_ROOT}/gta4-recomp/src"
+            "${LIBERTY_INSTALL_SDK_ROOT}/thirdparty/crypto")
+        target_compile_definitions(LibertyRecomp PRIVATE
+            LIBERTY_RECOMP_SDK_INSTALLER=1
+            GTA4_RPF_AES_KEY_SOURCE="${CMAKE_CURRENT_SOURCE_DIR}/../LibertyRecompLib/aes_key.bin")
+        target_link_libraries(LibertyRecomp PRIVATE ZLIB::ZLIB)
+    endif()
     if(NOT LIBERTY_RECOMP_PS4)
         set(LIBERTY_TOUCH_SOURCE_ROOT
             "${CMAKE_CURRENT_SOURCE_DIR}/../glue/rexglue-sdk-main/gta4-recomp/src")
@@ -1755,7 +1777,10 @@ target_include_directories(LibertyRecomp PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../glue/rexglue-sdk-main/thirdparty/cli11/include"
 )
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT ANDROID)
+    find_package(OpenSSL REQUIRED COMPONENTS Crypto)
+    find_package(ZLIB REQUIRED)
+    target_link_libraries(LibertyRecomp PRIVATE OpenSSL::Crypto ZLIB::ZLIB)
     find_package(PkgConfig REQUIRED)
     find_package(X11 REQUIRED)
     pkg_search_module(GLIB REQUIRED glib-2.0)

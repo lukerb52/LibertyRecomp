@@ -72,7 +72,11 @@ add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/msdf-atlas-gen")
 if (NOT (LIBERTY_RECOMP_TARGET_PLATFORM STREQUAL "ps4" OR LIBERTY_RECOMP_TARGET_PLATFORM STREQUAL "switch" OR ANDROID))
     add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/nativefiledialog-extended")
 endif()
-add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/o1heap")
+# ReXGlue owns an O1Heap fork with 16-byte alignment and reallocation support.
+# Creating the legacy target first makes the SDK silently reuse the wrong ABI.
+if (NOT USE_REXGLUE_RUNTIME AND NOT TARGET o1heap)
+    add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/o1heap")
+endif()
 # SDL2 + SDL2_mixer DISABLED — migrated to SDL3 (built in glue/CMakeLists.txt)
 # add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/SDL")
 # add_subdirectory("${LIBERTY_RECOMP_THIRDPARTY_ROOT}/SDL_mixer")

@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <filesystem>
+#include <functional>
 #include <string>
 
 namespace gta4::install {
@@ -10,6 +11,7 @@ struct RpfExtractionProgress {
   std::atomic<uint64_t>* completed_bytes = nullptr;
   std::atomic<uint64_t>* total_bytes = nullptr;
   const std::atomic<bool>* cancel_requested = nullptr;
+  std::function<bool()> should_continue;
 };
 
 // Parses and validates an RPF2 archive without extracting it. This runs the

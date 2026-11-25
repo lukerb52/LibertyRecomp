@@ -32,6 +32,32 @@ jobs:
         run: python tools/setup_repo.py --check-metadata
       - name: Exercise clone, pull, migration and recovery with local test remotes
         run: python tools/test_setup_repo.py
+      - name: Check legacy Python discovery with modern CMake
+        run: cmake -P tools/test_python_interp.cmake
+
+  linux-regressions:
+    name: Linux platform regressions (ASan/UBSan)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install standalone test dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang-18 libssl-dev zlib1g-dev
+      - name: Check wizard selection styling and picker thread policy
+        run: python3 tools/test_installer_controls.py
+      - name: Check installer transaction rollback and cancellation
+        run: python3 tools/test_linux_installer_ui.py --transaction-safety
+      - name: Check Linux guest-memory backing and abrupt-exit cleanup
+        run: TMPDIR="$PWD" python3 glue/rexglue-sdk-main/tests/regression/linux_memfd_test.py
+      - name: Test archive crypto and executable paths
+        run: |
+          clang++-18 -std=c++23 -fsanitize=address,undefined -ffunction-sections -fdata-sections \
+            tools/test_linux_rpf_crypto.cpp -Wl,--gc-sections -pthread -lcrypto -lz -o /tmp/test-linux-rpf
+          /tmp/test-linux-rpf
+          clang++-18 -std=c++23 -fsanitize=address,undefined -I LibertyRecomp \
+            tools/test_linux_process.cpp -o /tmp/test-linux-process
+          /tmp/test-linux-process
 
   desktop:
     name: Clean dependencies and build (${{ matrix.os }})
@@ -64,7 +90,8 @@ jobs:
             autoconf automake libtool libgtk-3-dev libx11-dev libxrandr-dev libxcursor-dev \
             libxi-dev libxinerama-dev libxext-dev libxkbcommon-dev libwayland-dev \
             wayland-protocols libdecor-0-dev libasound2-dev libpulse-dev libdbus-1-dev \
-            libusb-1.0-0-dev libssl-dev libvulkan-dev nasm
+            libusb-1.0-0-dev libssl-dev zlib1g-dev libvulkan-dev nasm \
+            xvfb xauth mesa-vulkan-drivers
           echo /usr/lib/llvm-18/bin >> "$GITHUB_PATH"
       - name: Install macOS prerequisites
         if: runner.os == 'macOS'
@@ -85,8 +112,35 @@ jobs:
       - name: Configure native macOS architecture
         if: runner.os == 'macOS'
         run: cmake --preset ${{ matrix.preset }} -DCMAKE_OSX_ARCHITECTURES="$(uname -m)"
+      - name: Check runtime allocator, image patch, and ISO source integration
+        if: runner.os == 'Linux'
+        run: |
+          cmake --build --preset ${{ matrix.preset }} --target liberty_test_rex_o1heap liberty_test_image_patch liberty_test_source_selection --parallel 2
+          ./out/build/${{ matrix.preset }}/liberty_test_rex_o1heap
+          ./out/build/${{ matrix.preset }}/liberty_test_image_patch
+          ./out/build/${{ matrix.preset }}/liberty_test_source_selection
       - name: Build application from checked-in generated sources
         run: cmake --build --preset ${{ matrix.preset }} --target LibertyRecomp --parallel 2
+      - name: Smoke-test Linux CLI startup and teardown without a display
+        if: runner.os == 'Linux'
+        run: |
+          ./out/build/${{ matrix.preset }}/LibertyRecomp/LibertyRecomp --help
+          if ./out/build/${{ matrix.preset }}/LibertyRecomp/LibertyRecomp --diagnostics-categories=invalid-category; then
+            exit 1
+          else
+            test "$?" -eq 105
+          fi
+      - name: Check Linux first-run setup with isolated user data
+        if: runner.os == 'Linux'
+        run: python3 tools/test_linux_first_run.py ./out/build/${{ matrix.preset }}/LibertyRecomp/LibertyRecomp
+      - name: Test native Linux ISO file selection on the UI thread
+        if: runner.os == 'Linux'
+        run: |
+          cmake --build --preset ${{ matrix.preset }} --target liberty_test_linux_file_picker --parallel 2
+          timeout 60s xvfb-run -a env -u WAYLAND_DISPLAY LIBERTY_PICKER_UNDER_XVFB=1 ./out/build/${{ matrix.preset }}/liberty_test_linux_file_picker
+      - name: Render Linux installer with software Vulkan and fallback fonts
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python3 tools/test_linux_installer_ui.py ./out/build/${{ matrix.preset }}/LibertyRecomp/LibertyRecomp
 
   arch:
     name: Arch Linux with distro CMake 4 and uncached vcpkg

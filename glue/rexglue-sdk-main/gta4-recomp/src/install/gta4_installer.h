@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <filesystem>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,19 @@ struct Progress {
   std::atomic<uint64_t> copied_bytes{0};
   std::atomic<uint64_t> total_bytes{0};
   std::atomic<bool> cancel_requested{false};
+  // Called synchronously by Install: may block for UI cancellation confirmation.
+  // The caller must not mutate this callback while installation is running.
+  std::function<bool()> should_continue;
+
+  bool CheckContinue() {
+    if (cancel_requested.load(std::memory_order_relaxed)) {
+      return false;
+    }
+    if (should_continue && !should_continue()) {
+      cancel_requested = true;
+    }
+    return !cancel_requested.load(std::memory_order_relaxed);
+  }
 };
 
 struct Result {
@@ -36,6 +50,8 @@ struct Result {
   std::string error;
 };
 
+// Validate the pinned retail base and v8 delta without copying any files.
+Result ValidateSelection(const Selection& selection);
 bool IsInstallReady(const std::filesystem::path& game_root, std::string* reason = nullptr);
 bool IsEpisodeReady(const std::filesystem::path& marketplace_root, Episode episode);
 Result VerifyInstall(const std::filesystem::path& game_root,

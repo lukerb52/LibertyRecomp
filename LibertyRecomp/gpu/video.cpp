@@ -1,4 +1,8 @@
 #include "video.h"
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
+#include <mutex>
 #include "gtaiv_device.h"
 #include <os/logger.h>
 #include "gtaiv_render_state.h"
@@ -11,6 +15,8 @@
 #include <hid/context_touch_host.h>
 #include <user/paths.h>
 #endif
+
+static void StartVideoWorkers();
 
 // Forward declarations for GTAIV renderer resource registration
 namespace GTAIV {
@@ -2561,14 +2567,25 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     g_commandLists[g_frame]->barriers(RenderBarrierStage::NONE, blankTextureBarriers, std::size(blankTextureBarriers));
 
-    // Initialize PostProcessRenderer for TAA/SMAA/FSR1
-    PostProcess::InitializePostProcessRenderer(
-        g_device.get(),
-        g_pipelineLayout.get(),
-        g_textureDescriptorSet.get(),
-        Video::s_viewportWidth,
-        Video::s_viewportHeight
-    );
+    // These optional shaders use overlapping t/s/b register bindings in their
+    // current SPIR-V and don't match g_pipelineLayout's bindless Vulkan sets.
+    // Even creating the pipelines is invalid (and can crash the driver), so
+    // leave the renderer uninitialized; callers already fall back to native
+    // rendering when IsInitialized() is false.
+    if (g_backend == Backend::VULKAN)
+    {
+        LOG_WARNING("[PostProcessRenderer] Optional post-processing disabled on Vulkan: shader descriptor layout is not supported; using native rendering");
+    }
+    else
+    {
+        PostProcess::InitializePostProcessRenderer(
+            g_device.get(),
+            g_pipelineLayout.get(),
+            g_textureDescriptorSet.get(),
+            Video::s_viewportWidth,
+            Video::s_viewportHeight
+        );
+    }
 
     // Initialize Upscaler system (DLSS, FSR3, XeSS, MetalFX)
     // Set the graphics device for upscalers that need native API access
@@ -2582,6 +2599,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
         LOG_WARNING("[Video] Upscaler initialization failed - upscaling disabled");
     }
 
+    StartVideoWorkers();
     return true;
 }
 
@@ -3542,21 +3560,9 @@ void Video::Present()
         return;
     }
 
-    // Purple screen clear - visual heartbeat to confirm engine is running
-    // ProcClear has strict safety checks to prevent Metal crashes
-    {
-        RenderCommand clearCmd;
-        clearCmd.type = RenderCommandType::Clear;
-        clearCmd.clear.flags = D3DCLEAR_TARGET;
-        clearCmd.clear.color[0] = 0.1f;  // Purple
-        clearCmd.clear.color[1] = 0.0f;
-        clearCmd.clear.color[2] = 0.2f;
-        clearCmd.clear.color[3] = 1.0f;
-        clearCmd.clear.z = 1.0f;
-        clearCmd.clear.stencil = 0;
-        g_renderQueue.enqueue(clearCmd);
-    }
-    
+    // Preserve the render target produced by the guest. A diagnostic purple
+    // clear used during early bring-up previously ran here after every guest
+    // draw and unconditionally erased the completed frame before presentation.
     // Test draw disabled — resource creation hooks are off, so no valid shaders/vertex decls
     // to use. Once resource creation is working, re-enable test draws here.
 
@@ -3604,7 +3610,8 @@ void Video::Present()
         // to prevent double-processing (game's effect + our effect both running)
         
         // Disable native DoF when custom DoF is enabled
-        bool customDofEnabled = (Config::DepthOfField != EDepthOfField::Off);
+        bool customDofEnabled = PostProcess::g_postProcessRenderer.IsInitialized() &&
+                                (Config::DepthOfField != EDepthOfField::Off);
         if (customDofEnabled) {
             LODHooks::DisableNativeDoF(nullptr);  // Uses cached base address
         } else {
@@ -3613,7 +3620,8 @@ void Video::Present()
         
         // Disable native Edge AA (EAA) when modern AA (TAA/SMAA/FSR) is enabled
         // GTA IV uses EAA through rage_postfx shader, not hardware MSAA
-        bool customAAEnabled = (Config::ModernAA != EModernAA::Off);
+        bool customAAEnabled = PostProcess::g_postProcessRenderer.IsInitialized() &&
+                               (Config::ModernAA != EModernAA::Off);
         if (customAAEnabled) {
             LODHooks::DisableNativeAA(nullptr);  // Zeros EAA_PARAMS2 in PostFX manager
         } else {
@@ -3650,7 +3658,8 @@ void Video::Present()
         // Bloom Effect
         // ======================================================================
         // Disable native bloom when custom bloom is enabled
-        bool customBloomEnabled = Config::EnableBloom;
+        bool customBloomEnabled = PostProcess::g_postProcessRenderer.IsInitialized() &&
+                                  Config::EnableBloom;
         if (customBloomEnabled) {
             PostFXHooks::DisableNativeBloom(nullptr);  // Uses cached base address
             
@@ -5933,12 +5942,16 @@ static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t 
 {
     static uint32_t s_drawPrimitiveCount = 0;
     ++s_drawPrimitiveCount;
-    
-    // ALWAYS log first 50 calls to verify hook is working
-    if (s_drawPrimitiveCount <= 50 || (s_drawPrimitiveCount % 5000) == 0)
+    if (s_drawPrimitiveCount <= 16)
     {
-        LOGF_WARNING("[HOOK] DrawPrimitive #{} type={} start={} count={} device={:p}",
-            s_drawPrimitiveCount, primitiveType, startVertex, primitiveCount, (void*)device);
+        std::fprintf(stderr,
+            "[DrawQueue:Primitive] #%u type=%u start=%u count=%u VS=%s PS=%s VDecl=%s RT=%s DS=%s\n",
+            s_drawPrimitiveCount, primitiveType, startVertex, primitiveCount,
+            g_mainThreadVertexShader != nullptr ? "yes" : "no",
+            g_mainThreadPixelShader != nullptr ? "yes" : "no",
+            g_mainThreadVertexDeclaration != nullptr ? "yes" : "no",
+            g_renderTarget != nullptr ? "yes" : "no",
+            g_depthStencil != nullptr ? "yes" : "no");
     }
 
     LocalRenderCommandQueue queue;
@@ -6005,6 +6018,12 @@ static bool HasRenderablePipeline(const char* source)
             g_pipelineState.vertexShader != nullptr ? "yes" : "no",
             g_pipelineState.pixelShader != nullptr ? "yes" : "no",
             g_pipelineState.vertexDeclaration != nullptr ? "yes" : "no");
+        if (s_missingPipelineLogs <= 16)
+            std::fprintf(stderr, "[DrawSkip:%s] #%u pipeline VS=%s PS=%s VDecl=%s\n",
+                source, s_missingPipelineLogs,
+                g_pipelineState.vertexShader != nullptr ? "yes" : "no",
+                g_pipelineState.pixelShader != nullptr ? "yes" : "no",
+                g_pipelineState.vertexDeclaration != nullptr ? "yes" : "no");
     }
 
     return false;
@@ -6034,6 +6053,13 @@ static bool HasRenderableTargets(const char* source)
             g_pipelineState.colorWriteEnable ? "yes" : "no",
             g_pipelineState.zEnable ? "yes" : "no",
             g_pipelineState.stencilEnable ? "yes" : "no");
+        if (s_missingTargetLogs <= 16)
+            std::fprintf(stderr, "[DrawSkip:%s] #%u framebuffer RT=%s DS=%s color=%s z=%s stencil=%s\n",
+                source, s_missingTargetLogs,
+                hasRenderTarget ? "yes" : "no", hasDepthStencil ? "yes" : "no",
+                g_pipelineState.colorWriteEnable ? "yes" : "no",
+                g_pipelineState.zEnable ? "yes" : "no",
+                g_pipelineState.stencilEnable ? "yes" : "no");
     }
 
     return false;
@@ -6106,12 +6132,16 @@ static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, in
 {
     static uint32_t s_drawIndexedPrimitiveCount = 0;
     ++s_drawIndexedPrimitiveCount;
-    
-    // ALWAYS log first 50 calls to verify hook is working
-    if (s_drawIndexedPrimitiveCount <= 50 || (s_drawIndexedPrimitiveCount % 5000) == 0)
+    if (s_drawIndexedPrimitiveCount <= 16)
     {
-        LOGF_WARNING("[HOOK] DrawIndexedPrimitive #{} type={} baseVtx={} startIdx={} count={} device={:p}",
-            s_drawIndexedPrimitiveCount, primitiveType, baseVertexIndex, startIndex, primitiveCount, (void*)device);
+        std::fprintf(stderr,
+            "[DrawQueue:Indexed] #%u type=%u base=%d start=%u count=%u VS=%s PS=%s VDecl=%s RT=%s DS=%s\n",
+            s_drawIndexedPrimitiveCount, primitiveType, baseVertexIndex, startIndex, primitiveCount,
+            g_mainThreadVertexShader != nullptr ? "yes" : "no",
+            g_mainThreadPixelShader != nullptr ? "yes" : "no",
+            g_mainThreadVertexDeclaration != nullptr ? "yes" : "no",
+            g_renderTarget != nullptr ? "yes" : "no",
+            g_depthStencil != nullptr ? "yes" : "no");
     }
 
     LocalRenderCommandQueue queue;
@@ -6151,6 +6181,22 @@ static void ProcDrawIndexedPrimitive(const RenderCommand& cmd)
 
 static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_t primitiveCount, void* vertexStreamZeroData, uint32_t vertexStreamZeroStride)
 {
+    static uint32_t s_drawPrimitiveUPCount = 0;
+    ++s_drawPrimitiveUPCount;
+    const uint32_t vertexCount = primitiveCount;
+    const uint32_t vertexDataSize = vertexCount * vertexStreamZeroStride;
+    if (s_drawPrimitiveUPCount <= 16)
+    {
+        std::fprintf(stderr,
+            "[DrawQueue:UP] #%u type=%u vertices=%u stride=%u VS=%s PS=%s VDecl=%s RT=%s DS=%s\n",
+            s_drawPrimitiveUPCount, primitiveType, vertexCount, vertexStreamZeroStride,
+            g_mainThreadVertexShader != nullptr ? "yes" : "no",
+            g_mainThreadPixelShader != nullptr ? "yes" : "no",
+            g_mainThreadVertexDeclaration != nullptr ? "yes" : "no",
+            g_renderTarget != nullptr ? "yes" : "no",
+            g_depthStencil != nullptr ? "yes" : "no");
+    }
+
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
@@ -6158,8 +6204,8 @@ static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_
     cmd.type = RenderCommandType::DrawPrimitiveUP;
     cmd.drawPrimitiveUP.primitiveType = primitiveType;
     cmd.drawPrimitiveUP.primitiveCount = primitiveCount;
-    cmd.drawPrimitiveUP.vertexStreamZeroData = g_intermediaryUploadAllocator.allocate(vertexStreamZeroData, primitiveCount * vertexStreamZeroStride);
-    cmd.drawPrimitiveUP.vertexStreamZeroSize = primitiveCount * vertexStreamZeroStride;
+    cmd.drawPrimitiveUP.vertexStreamZeroData = g_intermediaryUploadAllocator.allocate(vertexStreamZeroData, vertexDataSize);
+    cmd.drawPrimitiveUP.vertexStreamZeroSize = vertexDataSize;
     cmd.drawPrimitiveUP.vertexStreamZeroStride = vertexStreamZeroStride;
     cmd.drawPrimitiveUP.csdFilterState = g_csdFilterState;
     cmd.drawPrimitiveUP.vertexShader = g_mainThreadVertexShader;
@@ -6188,7 +6234,7 @@ static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
     auto allocation = g_uploadAllocators[g_frame].allocate<true>(reinterpret_cast<const uint32_t*>(args.vertexStreamZeroData), args.vertexStreamZeroSize, 0x4);
 
     auto& vertexBufferView = g_vertexBufferViews[0];
-    vertexBufferView.size = args.primitiveCount * args.vertexStreamZeroStride;
+    vertexBufferView.size = args.vertexStreamZeroSize;
     vertexBufferView.buffer = allocation.buffer->at(allocation.offset);
     g_inputSlots[0].stride = args.vertexStreamZeroStride;
     g_dirtyStates.vertexStreamFirst = 0;
@@ -7041,7 +7087,9 @@ static void SetClipPlane(GuestDevice* device, uint32_t index, const be<float>* p
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], plane[3].get());
 }
 
-static std::thread g_renderThread([]
+static std::thread g_renderThread;
+
+static void RenderThread()
     {
 #ifdef _WIN32
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
@@ -7094,7 +7142,7 @@ static std::thread g_renderThread([]
                 }
             }
         }
-    });
+    }
 
 struct GuestPictureData
 {
@@ -7755,16 +7803,7 @@ static void PipelineCompilerThread()
     }
 }
 
-static std::vector<std::unique_ptr<std::thread>> g_pipelineCompilerThreads = []()
-    {
-        size_t threadCount = std::max(2u, (std::thread::hardware_concurrency() * 2) / 3);
-
-        std::vector<std::unique_ptr<std::thread>> threads(threadCount);
-        for (auto& thread : threads)
-            thread = std::make_unique<std::thread>(PipelineCompilerThread);
-
-        return threads;
-    }();
+static std::vector<std::unique_ptr<std::thread>> g_pipelineCompilerThreads;
 
 static constexpr uint32_t MODEL_DATA_VFTABLE = 0x82073A44;
 static constexpr uint32_t TERRAIN_MODEL_DATA_VFTABLE = 0x8211D25C;
@@ -8696,7 +8735,41 @@ static void PipelineTaskConsumerThread()
     }
 }
 
-static std::thread g_pipelineTaskConsumerThread(PipelineTaskConsumerThread);
+static std::thread g_pipelineTaskConsumerThread;
+
+static void StartVideoWorkers()
+{
+    static std::once_flag started;
+    std::call_once(started, []
+    {
+        try
+        {
+            // Preserve the original launch order, but only after device setup succeeds.
+            g_renderThread = std::thread(RenderThread);
+
+            size_t threadCount = std::max(2u, (std::thread::hardware_concurrency() * 2) / 3);
+            g_pipelineCompilerThreads.resize(threadCount);
+            for (auto& thread : g_pipelineCompilerThreads)
+                thread = std::make_unique<std::thread>(PipelineCompilerThread);
+
+            g_pipelineTaskConsumerThread = std::thread(PipelineTaskConsumerThread);
+        }
+        catch (const std::exception& error)
+        {
+            std::fprintf(stderr, "[Video] Failed to start workers: %s\n", error.what());
+            std::fflush(stderr);
+            // Workers have no stop protocol. As in App::Exit, avoid destructing
+            // joinable threads on this fatal partial-startup path (not CLI exits).
+            std::_Exit(EXIT_FAILURE);
+        }
+        catch (...)
+        {
+            std::fprintf(stderr, "[Video] Failed to start workers: unknown exception\n");
+            std::fflush(stderr);
+            std::_Exit(EXIT_FAILURE);
+        }
+    });
+}
 
 #ifdef ASYNC_PSO_DEBUG
 
@@ -9429,7 +9502,51 @@ static GuestTexture* GTAIV_CreateTexture(uint32_t device, uint32_t width, uint32
     return texture;
 }
 
-GUEST_FUNCTION_HOOK(sub_82A44970, GTAIV_CreateVertexBuffer);
+static GuestSurface* GTAIV_CreateSurface(uint32_t width, uint32_t height, uint32_t format)
+{
+    static std::atomic<uint32_t> s_createCount{0};
+    static bool s_primaryColorSurfaceClaimed = false;
+    const uint32_t createIndex = s_createCount.fetch_add(1, std::memory_order_relaxed) + 1;
+
+    // GTA IV resolves its EDRAM color target into a front-buffer texture before
+    // Present. The legacy renderer has no Xenos resolve path, so bind the first
+    // display-sized color surface directly to its rotating host back buffer.
+    // Later display-sized surfaces remain ordinary off-screen render targets.
+    const RenderFormat hostFormat = ConvertFormat(format);
+    const bool useBackBuffer = !s_primaryColorSurfaceClaimed &&
+        g_backBuffer != nullptr && width == 1280 && height == 720 &&
+        !RenderFormatIsDepth(hostFormat);
+
+    GuestSurface* surface = nullptr;
+    if (useBackBuffer)
+    {
+        s_primaryColorSurfaceClaimed = true;
+        surface = g_backBuffer;
+        surface->width = width;
+        surface->height = height;
+        surface->format = hostFormat;
+        surface->guestFormat = format;
+        surface->sampleCount = RenderSampleCount::COUNT_1;
+        GTAIV::RegisterSurface(g_memory.MapVirtual(surface), surface);
+    }
+    else
+    {
+        surface = CreateSurface(
+            std::max(1u, width), std::max(1u, height), format, 0, nullptr);
+    }
+
+    if (createIndex <= 16)
+    {
+        const uint32_t handle = surface != nullptr ? g_memory.MapVirtual(surface) : 0;
+        std::fprintf(stderr,
+            "[CreateSurface] #%u %ux%u format=0x%08X backbuffer=%s -> 0x%08X\n",
+            createIndex, width, height, format, useBackBuffer ? "yes" : "no", handle);
+    }
+
+    return surface;
+}
+
+GUEST_FUNCTION_HOOK(sub_82A44970, GTAIV_CreateSurface);
 GUEST_FUNCTION_HOOK(sub_82A44850, GTAIV_CreateTexture);
 
 // =============================================================================
@@ -9564,6 +9681,28 @@ GUEST_FUNCTION_HOOK(sub_82A47C80, LockVertexBuffer);
 GUEST_FUNCTION_HOOK(sub_82A47E28, UnlockVertexBuffer);
 #endif
 
+// Native mode has no Xenos graphics interrupt to advance device[16552].
+// sub_828BF420 polls sub_82A46D70 until device[16544]-device[16552] < 2
+// before it calls Present; reporting the untouched hardware counters therefore
+// deadlocks before the first presentation. Report all submitted work complete.
+PPC_FUNC_HOOK(sub_82A46D70)
+{
+    const uint32_t deviceAddr = ctx.r3.u32;
+    const uint32_t statusAddr = ctx.r4.u32;
+    const uint32_t submitted = PPC_LOAD_U32(deviceAddr + 16544);
+
+    PPC_STORE_U32(deviceAddr + 16552, submitted);
+    PPC_STORE_U32(statusAddr + 0, 0);
+    PPC_STORE_U32(statusAddr + 4, submitted);
+    PPC_STORE_U32(statusAddr + 8, 0);
+
+    static std::atomic<uint32_t> s_logs{0};
+    const uint32_t logIndex = s_logs.fetch_add(1, std::memory_order_relaxed);
+    if (logIndex < 16)
+        std::fprintf(stderr, "[FrameFence] #%u device=0x%08X submitted=%u completed=%u delta=0\n",
+            logIndex + 1, deviceAddr, submitted, submitted);
+}
+
 // NOTE(GTAIV): Hook the game's D3D Present wrapper.
 // Render path: sub_82856F08 → sub_828529B0 → sub_828507F8 → sub_82A467D8 → Video::Present
 // 
@@ -9575,6 +9714,11 @@ PPC_FUNC_HOOK(sub_82A467D8)
 {
     static int s_hookCount = 0;
     ++s_hookCount;
+    if (s_hookCount <= 32 || (s_hookCount % 1000) == 0)
+    {
+        LOGF_WARNING("[Present] #{} device=0x{:08X}", s_hookCount, ctx.r3.u32);
+        std::fprintf(stderr, "[Present] #%d device=0x%08X\n", s_hookCount, ctx.r3.u32);
+    }
 
     // Diagnostic: trace the render dispatch path in sub_828C15C8
     // Gate: *(0x82B0B48C) > 0 → enter render dispatch
@@ -9925,6 +10069,78 @@ PPC_FUNC_HOOK(sub_82A3DF60)
 {
 }
 
+// sub_82A49458 — PM4 ring segment allocator (scratch replacement)
+//
+// Source proof: generated gta4_recomp.81.cpp. r3 is a ring descriptor
+// { +0 head, +4 current segment, +8 write ptr, +12 limit, +16 owner device }.
+// The original links the previous segment, then calls sub_82A48B90(owner,
+// 4224, 128), which waits on Xenos read-pointer fences (device+13220/14904)
+// before carving a segment out of the device ring. Batched draws such as
+// sub_82A3EDA8 reach it through the secondary ring at device+13352, whose
+// owner is never initialized in native mode, so the allocator faulted reading
+// guest address 0+10941. No PM4 written here is ever consumed, so each ring
+// gets one reusable scratch segment and the fence wait is skipped entirely.
+PPC_FUNC_HOOK(sub_82A49458)
+{
+    static constexpr uint32_t kSegmentSize = 4224;
+    static constexpr uint32_t kSegmentAlign = 128;
+    static std::mutex s_segmentMutex;
+    static std::unordered_map<uint32_t, uint32_t> s_segments;
+    static std::atomic<uint32_t> s_logCount{0};
+
+    const uint32_t ringAddr = ctx.r3.u32;
+    uint32_t segment = 0;
+    {
+        std::lock_guard lock(s_segmentMutex);
+        auto it = s_segments.find(ringAddr);
+        if (it != s_segments.end())
+        {
+            segment = it->second;
+        }
+        else if (void* host = g_userHeap.AllocPhysical(kSegmentSize, kSegmentAlign))
+        {
+            memset(host, 0, kSegmentSize);
+            segment = g_memory.MapVirtual(host);
+            s_segments.emplace(ringAddr, segment);
+        }
+    }
+
+    if (s_logCount.fetch_add(1, std::memory_order_relaxed) < 8)
+    {
+        LOGF_WARNING("[PM4Ring] scratch segment ring={:#x} owner={:#x} write={:#x} limit={:#x} -> seg={:#x}",
+            ringAddr, PPC_LOAD_U32(ringAddr + 16), PPC_LOAD_U32(ringAddr + 8),
+            PPC_LOAD_U32(ringAddr + 12), segment);
+    }
+
+    if (segment == 0)
+    {
+        LOGF_ERROR("[PM4Ring] failed to allocate scratch segment for ring {:#x}", ringAddr);
+        std::abort();
+    }
+
+    // Mirror the original epilogue: segment header at +0, payload follows.
+    PPC_STORE_U32(segment, 0);
+    PPC_STORE_U32(ringAddr + 4, segment);
+    PPC_STORE_U32(ringAddr + 8, segment + 4);
+    PPC_STORE_U32(ringAddr + 12, segment + 4220);
+    ctx.r3.u32 = segment + 4;
+}
+
+// sub_82A4F3C8 — Xenos cache flush / read-pointer synchronization.
+//
+// This is the second hardware-only tail reached by sub_82A3EDA8 after its
+// semantic draw calls. The generated function allocates GPU-visible packets,
+// translates 0x40000000 physical addresses, and ultimately stores through
+// sub_82A488B8. Native mode has no Xenos ring or read pointer, and the store
+// escaped guest memory at host address 0x100000000. Preserve only its boolean
+// return value (bit 5 of device+10941); the caller uses it to select the same
+// post-flush state path.
+PPC_FUNC_HOOK(sub_82A4F3C8)
+{
+    const uint32_t deviceAddr = ctx.r3.u32;
+    ctx.r3.u32 = (PPC_LOAD_U8(deviceAddr + 10941) >> 5) & 1u;
+}
+
 // Command-list replay retains CPU-visible lifetime and dirty-state semantics,
 // while all packet serialization in the generated body is intentionally omitted.
 PPC_FUNC_IMPL(__imp__sub_82A46EA8);
@@ -10164,6 +10380,10 @@ static void BindGTAIVVertexDeclaration(const char* source, uint32_t deviceAddr, 
             declarationHandle,
             vertexDeclaration != nullptr ? "OK" : "NULL",
             deviceAddr);
+        if (s_count <= 32)
+            std::fprintf(stderr, "[SetVDecl] #%u %s device=0x%08X handle=0x%08X decl=%s\n",
+                s_count, source, deviceAddr, declarationHandle,
+                vertexDeclaration != nullptr ? "OK" : "NULL");
     }
 }
 
@@ -10453,6 +10673,7 @@ static void RetireNativeBoundResource(uint32_t deviceAddr, uint32_t resourceAddr
     if (resourceAddr == 0)
         return;
 
+    auto* base = g_memory.base;
     const uint32_t liveFence = PPC_LOAD_U32(deviceAddr + kLiveResourceFenceOffset);
     if (liveFence != 0)
         PPC_STORE_U32(resourceAddr + kResourceFenceOffset, liveFence);
@@ -10594,10 +10815,23 @@ PPC_FUNC_HOOK(sub_82A3BF50)
     const uint32_t deviceAddr = ctx.r3.u32;
     const uint32_t targetIndex = ctx.r4.u32;
     const uint32_t surfaceAddr = ctx.r5.u32;
+    const uint32_t caller = ctx.lr;
     __imp__sub_82A3BF50(ctx, base);
 
     auto* device = reinterpret_cast<GuestDevice*>(g_memory.Translate(deviceAddr));
     GuestSurface* surface = GTAIV::LookupSurface(surfaceAddr);
+    static std::atomic<uint32_t> s_logs{0};
+    const uint32_t logIndex = s_logs.fetch_add(1, std::memory_order_relaxed);
+    if (logIndex < 64 || (logIndex % 1000) == 0)
+    {
+        LOGF_WARNING("[SetRT] #{} LR=0x{:08X} device=0x{:08X} index={} handle=0x{:08X} -> surface={}",
+            logIndex + 1, caller, deviceAddr, targetIndex, surfaceAddr,
+            surface != nullptr ? "OK" : "NULL");
+        if (logIndex < 32)
+            std::fprintf(stderr, "[SetRT] #%u LR=0x%08X device=0x%08X index=%u handle=0x%08X surface=%s\n",
+                logIndex + 1, caller, deviceAddr, targetIndex, surfaceAddr,
+                surface != nullptr ? "OK" : "NULL");
+    }
     if (device != nullptr && (targetIndex == 0 || surface == nullptr)) {
         SetRenderTarget(device, targetIndex, surface);
     }
@@ -10608,11 +10842,25 @@ PPC_FUNC_HOOK(sub_82A3C2B8)
 {
     const uint32_t deviceAddr = ctx.r3.u32;
     const uint32_t surfaceAddr = ctx.r4.u32;
+    const uint32_t caller = ctx.lr;
     __imp__sub_82A3C2B8(ctx, base);
 
     auto* device = reinterpret_cast<GuestDevice*>(g_memory.Translate(deviceAddr));
+    GuestSurface* surface = GTAIV::LookupSurface(surfaceAddr);
+    static std::atomic<uint32_t> s_logs{0};
+    const uint32_t logIndex = s_logs.fetch_add(1, std::memory_order_relaxed);
+    if (logIndex < 64 || (logIndex % 1000) == 0)
+    {
+        LOGF_WARNING("[SetDS] #{} LR=0x{:08X} device=0x{:08X} handle=0x{:08X} -> surface={}",
+            logIndex + 1, caller, deviceAddr, surfaceAddr,
+            surface != nullptr ? "OK" : "NULL");
+        if (logIndex < 32)
+            std::fprintf(stderr, "[SetDS] #%u LR=0x%08X device=0x%08X handle=0x%08X surface=%s\n",
+                logIndex + 1, caller, deviceAddr, surfaceAddr,
+                surface != nullptr ? "OK" : "NULL");
+    }
     if (device != nullptr) {
-        SetDepthStencilSurface(device, GTAIV::LookupSurface(surfaceAddr));
+        SetDepthStencilSurface(device, surface);
     }
 }
 
@@ -10801,6 +11049,15 @@ PPC_FUNC_HOOK(sub_82A3CC68) {
     static int s_count = 0;
     ++s_count;
 
+    const uint32_t returnAddress = ctx.lr;
+    const uint32_t arg4 = ctx.r4.u32;
+    const uint32_t arg5 = ctx.r5.u32;
+    const uint32_t arg6 = ctx.r6.u32;
+    const uint32_t arg7 = ctx.r7.u32;
+    const uint32_t arg8 = ctx.r8.u32;
+    const uint32_t arg9 = ctx.r9.u32;
+    const uint32_t arg10 = ctx.r10.u32;
+
     auto* device = reinterpret_cast<GuestDevice*>(
         static_cast<uint8_t*>(g_memory.Translate(ctx.r3.u32)));
     uint32_t flags = ctx.r4.u32;
@@ -10835,13 +11092,16 @@ PPC_FUNC_HOOK(sub_82A3CC68) {
     // Extract instance count from r9 (masked by tile stride alignment)
     uint32_t instanceCount = ctx.r9.u32;
 
-    if (s_count <= 30 || s_count % 5000 == 0) {
-        LOGF_WARNING("[DrawPrimInternal] #{} primType={} start={} count={} inst={} flags={:#x}",
-            s_count, primType, startVertex, vertexCount,
-            instanceCount, flags);
+    // This entry point is a Xenos EDRAM resolve, not a primitive draw. The
+    // primary color target is host-aliased to the swapchain above, so no copy
+    // is needed here. Translating the packed resolve descriptors as vertex
+    // counts produced bogus 7K-point draws and could overwrite the frame.
+    if (s_count <= 16)
+    {
+        std::fprintf(stderr,
+            "[ResolveBypass] #%d LR=0x%08X flags=0x%08X destination=0x%08X\n",
+            s_count, returnAddress, arg4, arg6);
     }
-
-    DrawPrimitive(device, primType, startVertex, vertexCount);
 }
 
 // --- sub_82A3E348: DrawIndexedVertices (3 callers) ---

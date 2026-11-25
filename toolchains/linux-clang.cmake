@@ -28,6 +28,17 @@ if(NOT _VCPKG_LINUX_CLANG_TOOLCHAIN)
     )
 
     set(CMAKE_SYSTEM_NAME Linux CACHE STRING "")
+    # Setting CMAKE_SYSTEM_NAME suppresses CMake's native processor detection.
+    # The SDK uses this to select FFmpeg DSP sources and platform output paths.
+    if(NOT CMAKE_SYSTEM_PROCESSOR)
+        if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64" OR VCPKG_TARGET_TRIPLET MATCHES "^x64-")
+            set(CMAKE_SYSTEM_PROCESSOR x86_64)
+        elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64" OR VCPKG_TARGET_TRIPLET MATCHES "^arm64-")
+            set(CMAKE_SYSTEM_PROCESSOR aarch64)
+        else()
+            set(CMAKE_SYSTEM_PROCESSOR "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+        endif()
+    endif()
 
     # Set compiler to clang
     set(CMAKE_C_COMPILER clang)

@@ -105,6 +105,43 @@ class SetupTests(unittest.TestCase):
         self.assertEqual((root / 'dep/source.txt').read_text(), text)
         self.assertEqual((root / 'dep/added.txt').read_text(), 'managed addition\n')
 
+    def test_missing_patch_source_reports_incomplete_checkout_without_modifying_it(self):
+        path = self.root / 'dep/source.txt'
+        path.unlink()
+        with self.assertRaisesRegex(setup_repo.SetupError, 'Dependency source file is missing'):
+            setup_repo.Patches(self.root).prepare()
+        self.assertFalse(path.exists())
+        self.assertFalse((self.root / 'dep/added.txt').exists())
+
+    def test_interrupted_empty_clone_can_resume(self):
+        dep = self.root / 'dep'
+        command(dep, 'symbolic-ref', 'HEAD', 'refs/heads/interrupted')
+        command(dep, 'read-tree', '--empty')
+        (dep / 'source.txt').unlink()
+        with self.assertRaisesRegex(setup_repo.SetupError, 'checkout is incomplete'):
+            setup_repo.inventory(self.root, require_ready=True)
+        self.prepare(self.root)
+        self.assert_ready(self.root, 'reviewed one\n')
+
+    def test_interrupted_clone_preserves_local_files(self):
+        dep = self.root / 'dep'
+        command(dep, 'symbolic-ref', 'HEAD', 'refs/heads/interrupted')
+        path = dep / 'source.txt'
+        original = path.read_bytes()
+        with self.assertRaisesRegex(setup_repo.SetupError, 'contains local files'):
+            self.prepare(self.root)
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_interrupted_clone_preserves_staged_files(self):
+        dep = self.root / 'dep'
+        command(dep, 'symbolic-ref', 'HEAD', 'refs/heads/interrupted')
+        (dep / 'source.txt').unlink()
+        staged = command(dep, 'ls-files', '--stage')
+        with self.assertRaisesRegex(setup_repo.SetupError, 'contains local files'):
+            self.prepare(self.root)
+        self.assertEqual(command(dep, 'ls-files', '--stage'), staged)
+        self.assertFalse((dep / 'source.txt').exists())
+
     def test_plain_and_recursive_clone_prepare_identically(self):
         for recursive in (False, True):
             with self.subTest(recursive=recursive):

@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #endif
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(__linux__)
 #include <dlfcn.h>
 #endif
 #if REX_PLATFORM_CONSOLE
@@ -84,7 +84,9 @@ REXCVAR_DECLARE(std::string, touch_controls);
 #include <rex/system/xobject.h>
 #include <rex/system/user_module.h>
 #include <rex/kernel/xam/apps/xgi_app.h>
+#include <rex/kernel/init.h>
 #include <rex/filesystem/vfs.h>
+#include <kernel/image_patch.h>
 #include <rex/filesystem/devices/host_path_device.h>
 #include <rex/kernel/crt/heap.h>
 #include <rex/chrono/clock.h>
@@ -532,7 +534,7 @@ int main(int argc, char *argv[])
         if (!rex::diagnostics::Configure(diagnostics, diagnosticsCategories,
                                          &diagnosticsError)) {
             std::fprintf(stderr, "Liberty Recompiled: %s\n", diagnosticsError.c_str());
-            return CLI::ExitCodes::ValidationError;
+            return static_cast<int>(CLI::ExitCodes::ValidationError);
         }
 
         App::s_isSkipLogos = App::s_isSkipLogos || skipLogos;
@@ -624,6 +626,19 @@ int main(int argc, char *argv[])
     const auto gamePath = GetGamePath();
     DIAG_EMIT("[Main] Game path: %s\n", gamePath.string().c_str());
     const auto rexContentRoot = gamePath / "game";
+#if !defined(LIBERTY_RECOMP_EMBEDDED_ASSETS)
+    // Runtime::Setup mounts game/ before the desktop installer runs. A fresh
+    // install has no content yet, but still needs a directory to mount.
+    std::error_code contentRootError;
+    std::filesystem::create_directories(rexContentRoot, contentRootError);
+    if (contentRootError || !std::filesystem::is_directory(rexContentRoot, contentRootError))
+    {
+        fprintf(stderr, "[Main] FATAL: Cannot prepare game directory '%s': %s\n",
+                rexContentRoot.string().c_str(),
+                contentRootError ? contentRootError.message().c_str() : "not a directory");
+        return EXIT_FAILURE;
+    }
+#endif
     DIAG_EMIT("[Main] Content root: %s\n", rexContentRoot.string().c_str());
     DIAG_EMIT("[Main] Content root exists: %d\n", (int)std::filesystem::exists(rexContentRoot));
 
@@ -637,6 +652,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    const auto prepareContentBridges = [&]() {
     // Bridge extracted audio.rpf content to where the RAGE relative device expects it.
     // The packfile device at audio:/ has an AES-encrypted TOC that fails to decrypt in
     // the recompiled env. The fallback relative device uses root game:/xbox360/audio/,
@@ -708,6 +724,8 @@ int main(int argc, char *argv[])
         }
     }
 #endif  // !REX_PLATFORM_CONSOLE (DLC1/DLC2 direct-probe bridge)
+    };
+    prepareContentBridges();
 
     {
         static std::unique_ptr<rex::Runtime> s_rexRuntime;
@@ -777,6 +795,10 @@ int main(int argc, char *argv[])
                 rexConfig.live.backend = rex::system::xam::LiveBackend::kOffline;
                 break;
         }
+        // Load xboxkrnl/xam/xbdm before XEX import resolution. Without their
+        // export tables, kernel variable imports (e.g. VdHSIOCalibrationLock)
+        // keep raw ordinals and the guest waits forever on a bogus lock.
+        rexConfig.kernel_init = rex::kernel::InitializeKernel;
         rexConfig.live.community_url = Config::CommunityServerURL.Value;
         rexConfig.live.player_name = Config::PlayerName.Value;
         switch (Config::MultiplayerRelayPolicy.Value)
@@ -796,13 +818,14 @@ int main(int argc, char *argv[])
         rexConfig.live.lan_discovery_port = static_cast<uint16_t>(std::clamp<int32_t>(
             Config::LANBroadcastPort.Value, 1, std::numeric_limits<uint16_t>::max()));
 
-        uint32_t rt_status = s_rexRuntime->Setup(
-            static_cast<uint32_t>(PPC_CODE_BASE),
-            static_cast<uint32_t>(PPC_CODE_SIZE),
-            static_cast<uint32_t>(PPC_IMAGE_BASE),
-            static_cast<uint32_t>(PPC_IMAGE_SIZE),
-            PPCFuncMappings,
-            std::move(rexConfig));
+        const rex::PPCImageInfo imageInfo{
+            .code_base = static_cast<uint32_t>(PPC_CODE_BASE),
+            .code_size = static_cast<uint32_t>(PPC_CODE_SIZE),
+            .image_base = static_cast<uint32_t>(PPC_IMAGE_BASE),
+            .image_size = static_cast<uint32_t>(PPC_IMAGE_SIZE),
+            .func_mappings = PPCFuncMappings,
+        };
+        uint32_t rt_status = s_rexRuntime->Setup(imageInfo, std::move(rexConfig));
         DIAG_EMIT("[Main] Setup() returned 0x%08X\n", rt_status);
 
         // Xbox 360 timebase = exactly 50 MHz. Must be explicit because Liberty
@@ -826,7 +849,7 @@ int main(int argc, char *argv[])
         // this for ReXApp-derived apps, but Liberty owns its own main() so we
         // have to call it ourselves. Without this rexcrt_RtlAllocateHeap fails
         // with "kernel memory is null" on every guest alloc → SIGBUS.
-        if (!rex::kernel::crt::InitHeap(FLAGS_rexcrt_heap_size_mb, s_rexRuntime->memory())) {
+        if (!rex::kernel::crt::InitHeap(REXCVAR_GET(rexcrt_heap_size_mb), s_rexRuntime->memory())) {
             fprintf(stderr, "[Main] FATAL: rexcrt heap init failed\n");
             std::_Exit(1);
         }
@@ -836,7 +859,7 @@ int main(int argc, char *argv[])
             auto* p = s_rexRuntime->function_dispatcher();
             PPCFunc* xsf = p->GetFunction(0x82A11290);
             fprintf(stderr, "[DIAG] After Setup(): GetFunction(0x82A11290)=%p  HasFT=%d\n",
-                    (void*)xsf, (int)p->HasFunctionTable());
+                    (void*)xsf, (int)p->HasAnyFunctionTable());
             int total = 0, nullHost = 0;
             bool foundEntry = false;
             for (int i = 0; PPCFuncMappings[i].guest != 0; ++i) {
@@ -1072,6 +1095,20 @@ int main(int argc, char *argv[])
             DIAG_EMIT("[EXIT-TRACE] main.cpp:675 calling _Exit\n");
             std::_Exit(0);
         }
+
+        // Publishing a new game tree replaces pre-install bridge copies.
+        // Recreate them before rebuilding the mounted directory snapshot.
+        prepareContentBridges();
+
+        // Setup mounted the pre-install directory tree. Rebuild it before any
+        // guest file handles exist, preserving the device and its symlinks.
+        auto* gameRoot = rex::Runtime::instance()->file_system()->ResolvePath("game:");
+        if (!gameRoot || !gameRoot->device()->Initialize())
+        {
+            fprintf(stderr, "[Main] FATAL: Cannot refresh installed game files at '%s'\n",
+                    rexContentRoot.string().c_str());
+            std::_Exit(EXIT_FAILURE);
+        }
     }
 
     bool showMainMenu = false;
@@ -1143,12 +1180,18 @@ int main(int argc, char *argv[])
             std::_Exit(1);
         }
 
-        // Unprotect so we can re-apply Liberty's header patches.
-        auto* heap = rt->memory()->LookupHeap(PPC_IMAGE_BASE);
-        if (heap) {
-            heap->Protect(PPC_IMAGE_BASE, PPC_IMAGE_SIZE,
-                          rex::memory::kMemoryProtectRead | rex::memory::kMemoryProtectWrite);
+        auto loadedModule = rt->kernel_state()->GetExecutableModule();
+        const uint32_t entryPoint = loadedModule ? loadedModule->entry_point() : 0;
+        if (!loadedModule || !g_memory.FindFunction(entryPoint)) {
+            fprintf(stderr,
+                    "[Main] FATAL: Installed XEX entry point 0x%08X is not present in this build's recompiled functions.\n"
+                    "Install the supported GTA IV v8 title update through --install; retail default.xex alone is not supported.\n",
+                    entryPoint);
+            std::_Exit(EXIT_FAILURE);
         }
+
+        // Keep the XEX loader's per-section protections. Header patches below
+        // temporarily unprotect only their own word, not the entire image.
         DIAG_EMIT("[Main] XEX loaded — PE data sections now authoritative\n");
     }
 
@@ -1161,8 +1204,13 @@ int main(int argc, char *argv[])
         constexpr uint32_t GPU_CONTEXT_GLOBAL = 0x83124900;
         uint32_t currentGOT = __builtin_bswap32(*reinterpret_cast<uint32_t*>(g_memory.base + GOT_GPU_CONTEXT));
         if (currentGOT != GPU_CONTEXT_GLOBAL) {
-            uint32_t* gotEntry = reinterpret_cast<uint32_t*>(g_memory.base + GOT_GPU_CONTEXT);
-            *gotEntry = __builtin_bswap32(GPU_CONTEXT_GLOBAL);
+            if (!LibertyMemory::PatchImageU32(rex::Runtime::instance()->memory(),
+                                              GOT_GPU_CONTEXT,
+                                              __builtin_bswap32(GPU_CONTEXT_GLOBAL))) {
+                fprintf(stderr, "[Main] FATAL: Cannot patch GPU GOT at 0x%08X or restore its protection\n",
+                        GOT_GPU_CONTEXT);
+                std::_Exit(EXIT_FAILURE);
+            }
             DIAG_EMIT("[Main] GPU GOT 0x%08X -> 0x%08X (was 0x%08X)\n",
                       GOT_GPU_CONTEXT, GPU_CONTEXT_GLOBAL, currentGOT);
         } else {
@@ -1226,7 +1274,7 @@ int main(int argc, char *argv[])
         auto* p = rt->function_dispatcher();
         PPCFunc* xsf = p->GetFunction(0x82A11290);
         fprintf(stderr, "[DIAG] Before LaunchModule(): GetFunction(0x82A11290)=%p  HasFT=%d  instance=%p\n",
-                (void*)xsf, (int)p->HasFunctionTable(), (void*)rt);
+                (void*)xsf, (int)p->HasAnyFunctionTable(), (void*)rt);
         fflush(stderr);
     }
     auto main_xthread = rt->LaunchModule();

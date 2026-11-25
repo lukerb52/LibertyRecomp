@@ -159,6 +159,7 @@ static int g_dlcSelectionIndex = 1; // 0=TBOGT, 1=GTA IV, 2=TLAD (center selecte
 
 // Title Update selection state
 static liberty::install::TitleUpdateManager g_titleUpdateManager;
+static std::filesystem::path g_manualUpdateSourcePath;
 static int g_selectedTitleUpdateIndex = -1;  // -1 = no update (base game)
 static bool g_titleUpdatesScanned = false;
 
@@ -826,7 +827,7 @@ static ImVec2 ComputeTextSize(ImFont *font, const char *text, float size, float 
     return textSize;
 }
 
-static void DrawButton(ImVec2 min, ImVec2 max, const char *buttonText, bool sourceButton, bool buttonEnabled, bool &buttonPressed, float maxTextWidth = FLT_MAX, bool makeDefault = false)
+static void DrawButton(ImVec2 min, ImVec2 max, const char *buttonText, bool sourceButton, bool buttonEnabled, bool &buttonPressed, float maxTextWidth = FLT_MAX, bool makeDefault = false, bool selected = false)
 {
     buttonPressed = false;
 
@@ -851,7 +852,14 @@ static void DrawButton(ImVec2 min, ImVec2 max, const char *buttonText, bool sour
         }
     }
 
+    if (selected)
+    {
+        baser = 48;
+        baseg = 32;
+    }
     DrawButtonContainer(min, max, baser, baseg, alpha);
+    if (selected)
+        drawList->AddRect(min, max, GTA4Style::WithAlpha(GTA4Style::Colors::Orange, alpha), 0.0f, 0, Scale(2.0f));
 
     ImFont *font = g_pFntRodin;
     float size = Scale(18.0f);
@@ -864,7 +872,7 @@ static void DrawButton(ImVec2 min, ImVec2 max, const char *buttonText, bool sour
     SetScale({ squashRatio, 1.0f });
 
     // GTA IV Style: Orange text for selected, white/gray for normal
-    ImU32 textColor = isHovered 
+    ImU32 textColor = (isHovered || selected)
         ? GTA4Style::WithAlpha(GTA4Style::Colors::Orange, alpha)
         : IM_COL32(255, 255, 255, 255 * alpha);
 
@@ -992,7 +1000,7 @@ static bool ConvertPathSet(const nfdpathset_t *pathSet, std::list<std::filesyste
 
 static void PickerThreadProcess()
 {
-    const nfdpathset_t *pathSet;
+    const nfdpathset_t *pathSet = nullptr;
     nfdresult_t result = NFD_ERROR;
     if (g_currentPickerFolderMode)
     {
@@ -1005,12 +1013,18 @@ static void PickerThreadProcess()
     
     if (result == NFD_OKAY)
     {
-        bool pathsConverted = ConvertPathSet(pathSet, g_currentPickerResults);
+        const bool pathsConverted = ConvertPathSet(pathSet, g_currentPickerResults);
         NFD_PathSet_Free(pathSet);
+        if (!pathsConverted)
+        {
+            const char* error = NFD_GetError();
+            g_currentPickerErrorMessage = error ? error : "Unable to read the selected file paths.";
+        }
     }
     else if (result == NFD_ERROR)
     {
-        g_currentPickerErrorMessage = NFD_GetError();
+        const char* error = NFD_GetError();
+        g_currentPickerErrorMessage = error ? error : "Unable to open the native file picker.";
     }
 
     g_currentPickerResultsReady = true;
@@ -1024,12 +1038,14 @@ static void PickerStart(bool folderMode) {
     }
 
     g_currentPickerResults.clear();
+    g_currentPickerErrorMessage.clear();
     g_currentPickerFolderMode = folderMode;
     g_currentPickerResultsReady = false;
     g_currentPickerVisible = true;
 
-    // Optional single thread mode for testing on systems that do not interact well with the separate thread being used for NFD.
-#ifdef __APPLE__
+    // GTK and Cocoa dialogs must run on the thread that initialized their UI.
+    // GTK's modal chooser is not safe to run on a worker thread.
+#if defined(__APPLE__) || defined(__linux__)
     constexpr bool singleThreadMode = true;
 #else
     constexpr bool singleThreadMode = false;
@@ -1062,11 +1078,15 @@ static bool ParseSourcePaths(std::list<std::filesystem::path> &paths)
     constexpr size_t failedPathLimit = 5;
     bool isFailedPathsOverLimit = false;
     std::list<std::filesystem::path> failedPaths;
+    std::string gameSourceError;
     if (g_currentPage == WizardPage::SelectGame)
     {
         for (const std::filesystem::path &path : paths)
         {
-            if (Installer::parseGame(path))
+            const auto validation = Installer::validateGameVersion(path);
+            if (!validation.isValid && gameSourceError.empty())
+                gameSourceError = validation.errorMessage;
+            if (validation.isValid)
             {
                 g_gameSourcePath = path;
             }
@@ -1100,6 +1120,8 @@ static bool ParseSourcePaths(std::list<std::filesystem::path> &paths)
     {
         std::stringstream stringStream;
         stringStream << Localise("Installer_Message_InvalidFilesList") << std::endl;
+        if (!gameSourceError.empty())
+            stringStream << std::endl << gameSourceError << std::endl;
         for (const std::filesystem::path &path : failedPaths)
         {
             std::u8string filenameU8 = path.filename().u8string();
@@ -1135,7 +1157,8 @@ static void DrawLanguagePicker()
 
             auto lightSize = Scale(14);
 
-            DrawButton(min, max, LANGUAGE_TEXT[i], false, true, buttonPressed, FLT_MAX, LANGUAGE_ENUM[i] == ELanguage::English);
+            const bool selected = LANGUAGE_ENUM[i] == Config::Language;
+            DrawButton(min, max, LANGUAGE_TEXT[i], false, true, buttonPressed, FLT_MAX, selected, selected);
 
             if (buttonPressed)
             {
@@ -1548,6 +1571,34 @@ static void DrawTitleUpdateSelection()
     float buttonHeight = Scale(28.0f);
     float buttonSpacing = Scale(8.0f);
     
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    {
+        bool pressed = false;
+        const std::string label = g_manualUpdateSourcePath.empty()
+            ? "Select v8 update (default.xexp or Xbox package)..."
+            : "Selected: " + g_manualUpdateSourcePath.filename().string();
+        DrawButton({ buttonX, buttonY }, { buttonX + buttonWidth, buttonY + buttonHeight },
+            label.c_str(), false, true, pressed, buttonWidth - Scale(20.0f),
+            !g_manualUpdateSourcePath.empty());
+        if (pressed)
+        {
+            const nfdpathset_t* paths = nullptr;
+            if (NFD_OpenDialogMultipleN(&paths, nullptr, 0, nullptr) == NFD_OKAY)
+            {
+                std::list<std::filesystem::path> selected;
+                if (ConvertPathSet(paths, selected) && !selected.empty())
+                {
+                    g_manualUpdateSourcePath = selected.front();
+                    g_selectedTitleUpdateIndex = -1;
+                    g_titleUpdateManager.SelectUpdate(-1);
+                }
+                NFD_PathSet_Free(paths);
+            }
+        }
+        buttonY += buttonHeight + buttonSpacing;
+    }
+#endif
+
     // "No Update (Original)" option
     {
         ImVec2 min = { buttonX, buttonY };
@@ -1564,6 +1615,7 @@ static void DrawTitleUpdateSelection()
         if (buttonPressed)
         {
             g_selectedTitleUpdateIndex = -1;
+            g_manualUpdateSourcePath.clear();
             g_titleUpdateManager.SelectUpdate(-1);
         }
         
@@ -1591,6 +1643,7 @@ static void DrawTitleUpdateSelection()
         if (buttonPressed)
         {
             g_selectedTitleUpdateIndex = index;
+            g_manualUpdateSourcePath.clear();
             g_titleUpdateManager.SelectUpdate(index);
         }
         
@@ -1725,6 +1778,9 @@ static bool InstallerParseSources(std::string &errorMessage)
         }
     }
 
+    if (!g_manualUpdateSourcePath.empty())
+        installerInput.updateSource = g_manualUpdateSourcePath;
+
     for (std::filesystem::path &path : g_dlcSourcePaths)
     {
         if (!path.empty())
@@ -1789,7 +1845,7 @@ static void DrawNavigationButton()
         if (g_currentPage == WizardPage::SelectDLC)
         {
             // PHASE 1: Validate DLC-Update requirement
-            if (!ValidateDLCUpdateRequirement())
+            if (g_manualUpdateSourcePath.empty() && !ValidateDLCUpdateRequirement())
             {
                 // DLC selected but TU8 not selected - show error
                 std::stringstream errorMsg;
@@ -1904,6 +1960,10 @@ static void DrawNavigationButton()
                 return;
             }
             
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+            // Pair validation must wait until the next page has selected the update.
+            SetCurrentPage(WizardPage::SelectTitleUpdate);
+#else
             // STEP 2: Validate game source files
             std::string sourcesErrorMessage;
             if (!InstallerParseSources(sourcesErrorMessage))
@@ -1921,9 +1981,20 @@ static void DrawNavigationButton()
                 // GTA IV: Go to Title Update selection after game selection
                 SetCurrentPage(WizardPage::SelectTitleUpdate);
             }
+#endif
         }
         else if (g_currentPage == WizardPage::SelectTitleUpdate)
         {
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+            std::string error;
+            if (!InstallerParseSources(error))
+            {
+                g_currentMessagePrompt = "Game / v8 title update required:\n\n" + error;
+                g_currentMessagePromptConfirmation = false;
+                Game_PlaySound("error");
+                return;
+            }
+#else
             // Validate Title Update compatibility before proceeding
             if (g_titleUpdateManager.HasSelectedUpdate())
             {
@@ -1947,6 +2018,7 @@ static void DrawNavigationButton()
                 }
             }
             
+#endif
             // Proceed to DLC selection
             SetCurrentPage(WizardPage::SelectDLC);
         }

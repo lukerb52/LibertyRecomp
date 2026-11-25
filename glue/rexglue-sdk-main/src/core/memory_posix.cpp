@@ -26,6 +26,13 @@
 #include <rex/platform.h>
 #include <rex/string.h>
 
+#if REX_PLATFORM_LINUX && !REX_PLATFORM_ANDROID
+#include <linux/memfd.h>
+#include <sys/syscall.h>
+
+#include <rex/logging/macros.h>
+#endif
+
 #if REX_PLATFORM_ANDROID
 #include <string.h>
 
@@ -41,6 +48,7 @@
 namespace rex {
 namespace memory {
 
+#if !REX_PLATFORM_LINUX && !REX_PLATFORM_ANDROID
 // Convert filesystem path to valid shm_open name (must start with /, no other slashes)
 static std::string MakeShmName(const std::filesystem::path& path) {
   std::string name = path.string();
@@ -53,6 +61,7 @@ static std::string MakeShmName(const std::filesystem::path& path) {
   }
   return name;
 }
+#endif
 
 #if REX_PLATFORM_ANDROID
 // May be null if no dynamically loaded functions are required.
@@ -348,6 +357,36 @@ FileMappingHandle CreateFileMappingHandle(const std::filesystem::path& path, siz
     return kFileMappingHandleInvalid;
   }
   return static_cast<FileMappingHandle>(ashmem_fd);
+#elif REX_PLATFORM_LINUX
+  // The name is diagnostic only: all views use this fd, never reopen by name.
+  // Unlike shm_open, memfd is not charged to the /dev/shm mount and leaves no
+  // persistent name behind when the process exits without running destructors.
+  (void)path;
+  (void)access;  // Protection is applied by MapFileView.
+  (void)commit;  // Backing pages are allocated lazily.
+#if defined(SYS_memfd_create)
+  int fd = static_cast<int>(syscall(SYS_memfd_create, "rex_guest_memory", MFD_CLOEXEC));
+#else
+  int fd = -1;
+  errno = ENOSYS;
+#endif
+  if (fd < 0) {
+    const int error = errno;
+    REXLOG_ERROR("memfd_create for guest memory failed: {} (errno {}). "
+                 "Linux with memfd_create support (3.17+) is required; check sandbox/seccomp "
+                 "permissions and file descriptor limits. Not falling back to /dev/shm.",
+                 std::strerror(error), error);
+    return kFileMappingHandleInvalid;
+  }
+  if (ftruncate(fd, static_cast<off_t>(length)) != 0) {
+    const int error = errno;
+    close(fd);
+    REXLOG_ERROR("ftruncate of guest memory memfd to {} bytes failed: {} (errno {}). "
+                 "Check memory and file size limits.",
+                 length, std::strerror(error), error);
+    return kFileMappingHandleInvalid;
+  }
+  return static_cast<FileMappingHandle>(fd);
 #else
   int oflag;
   switch (access) {
@@ -383,9 +422,11 @@ FileMappingHandle CreateFileMappingHandle(const std::filesystem::path& path, siz
 
 void CloseFileMappingHandle(FileMappingHandle handle, const std::filesystem::path& path) {
   close(static_cast<int>(handle));
-#if !REX_PLATFORM_ANDROID
+#if !REX_PLATFORM_ANDROID && !REX_PLATFORM_LINUX
   auto full_path = MakeShmName(path);
   shm_unlink(full_path.c_str());
+#else
+  (void)path;
 #endif
 }
 

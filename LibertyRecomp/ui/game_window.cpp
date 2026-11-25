@@ -210,10 +210,19 @@ bool GameWindow::Init(const char* sdlVideoDriver)
     SDL_SetHint("SDL_APP_ID", "io.github.ozordi.libertyrecomp");
 #endif
 
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(SDL_VULKAN_ENABLED)
+    // The native Plume surface path consumes X11 handles. Use XWayland on
+    // Wayland desktops instead of letting SDL select an incompatible surface.
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
+#endif
+    if (sdlVideoDriver && *sdlVideoDriver)
+        SDL_SetHintWithPriority(SDL_HINT_VIDEO_DRIVER, sdlVideoDriver, SDL_HINT_OVERRIDE);
+
     // SDL3: SDL_VideoInit removed; use SDL_InitSubSystem(SDL_INIT_VIDEO) instead
     if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
     {
         LOGFN_ERROR("Failed to initialise SDL video subsystem: {}", SDL_GetError());
+        return false;
     }
 
     auto videoDriverName = SDL_GetCurrentVideoDriver();
@@ -353,6 +362,13 @@ bool GameWindow::Init(const char* sdlVideoDriver)
     {
         auto* x11Display = SDL_GetPointerProperty(SDL_GetWindowProperties(s_pWindow), SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
         auto x11Window = (Window)SDL_GetNumberProperty(SDL_GetWindowProperties(s_pWindow), SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+        if (!x11Display || !x11Window)
+        {
+            LOGFN_ERROR("The renderer requires X11. Use SDL_VIDEO_DRIVER=x11 and install XWayland on Wayland desktops.");
+            SDL_DestroyWindow(s_pWindow);
+            s_pWindow = nullptr;
+            return false;
+        }
         s_renderWindow = { (Display*)x11Display, x11Window };
     }
 #elif defined(__APPLE__)

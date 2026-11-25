@@ -7,6 +7,8 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include <memory>
 #include <zlib.h>
 
 #if defined(_WIN32)
@@ -19,7 +21,7 @@
 // Android: RPF decryption not needed — game data is pre-extracted.
 // Provide a stub that always fails so the code compiles.
 #else
-#include <CommonCrypto/CommonCrypto.h>
+#include <openssl/evp.h>
 #endif
 
 namespace RpfExtractor
@@ -126,7 +128,7 @@ namespace RpfExtractor
         // Android: RPF decryption not supported — game data is pre-extracted.
         (void)data; (void)key; (void)dataLen;
         return false;
-#else
+#elif defined(__APPLE__)
         // macOS/iOS CommonCrypto - decrypt 16 times like SparkIV
         for (int round = 0; round < 16; round++)
         {
@@ -145,6 +147,36 @@ namespace RpfExtractor
             {
                 return false;
             }
+        }
+        return true;
+#else
+        // RPF uses 16 successive AES decryptions, not AES's internal rounds.
+        // Disable padding and leave any trailing partial block untouched.
+        std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)> ctx(
+            EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free);
+        if (!ctx)
+            return false;
+
+        for (int round = 0; round < 16; ++round)
+        {
+            if (EVP_DecryptInit_ex(ctx.get(), EVP_aes_256_ecb(), nullptr, key.data(), nullptr) != 1 ||
+                EVP_CIPHER_CTX_set_padding(ctx.get(), 0) != 1)
+                return false;
+
+            // EVP accepts int lengths. Chunk large archives on block boundaries.
+            for (size_t offset = 0; offset < dataLen;)
+            {
+                const int chunk = static_cast<int>(std::min(dataLen - offset, size_t{1} << 30));
+                int written = 0;
+                if (EVP_DecryptUpdate(ctx.get(), data.data() + offset, &written,
+                                      data.data() + offset, chunk) != 1 || written != chunk)
+                    return false;
+                offset += chunk;
+            }
+            uint8_t finalBlock[EVP_MAX_BLOCK_LENGTH];
+            int written = 0;
+            if (EVP_DecryptFinal_ex(ctx.get(), finalBlock, &written) != 1 || written != 0)
+                return false;
         }
         return true;
 #endif

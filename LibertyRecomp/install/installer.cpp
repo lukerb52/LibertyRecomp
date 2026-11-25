@@ -1,4 +1,8 @@
 #include "installer.h"
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+#include "install/gta4_installer.h"
+#include "install/gta4_source_inspector.h"
+#endif
 #include <functional>
 #include "shader_converter.h"
 #include "iso_extractor.h"
@@ -448,10 +452,11 @@ bool Installer::checkGameInstall(const std::filesystem::path &baseDirectory, std
 {
     modulePath = baseDirectory / GameDirectory / GameExecutableFile;
 
-    if (!std::filesystem::exists(modulePath))
-        return false;
-
-    return true;
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    return gta4::install::IsInstallReady(baseDirectory / GameDirectory);
+#else
+    return std::filesystem::exists(modulePath);
+#endif
 }
 
 bool Installer::checkDLCInstall(const std::filesystem::path &baseDirectory, DLC dlc)
@@ -595,6 +600,25 @@ bool Installer::parseSources(const Input &input, Journal &journal, Sources &sour
     journal = Journal();
     sources = Sources();
 
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    sources.gameSourcePath = input.gameSource;
+    if (sources.gameSourcePath.extension() == ".xex")
+        sources.gameSourcePath = sources.gameSourcePath.parent_path();
+    sources.updateSourcePath = input.updateSource;
+    if (!sources.gameSourcePath.empty() || !sources.updateSourcePath.empty())
+    {
+        gta4::install::Selection selection;
+        selection.game_source = sources.gameSourcePath;
+        selection.update_source = sources.updateSourcePath;
+        const auto result = gta4::install::ValidateSelection(selection);
+        if (!result.success)
+        {
+            journal.lastResult = Journal::Result::IncompatibleUpdate;
+            journal.lastErrorMessage = result.error;
+            return false;
+        }
+    }
+#else
     // Parse the contents of the base game.
     if (!input.gameSource.empty())
     {
@@ -634,6 +658,8 @@ bool Installer::parseSources(const Input &input, Journal &journal, Sources &sour
         }
     }
 
+#endif
+
     // Parse the contents of the DLC Packs.
     for (const auto &path : input.dlcSources)
     {
@@ -645,6 +671,8 @@ bool Installer::parseSources(const Input &input, Journal &journal, Sources &sour
         }
 
         DLC dlc = detectDLC(path, *dlcSource.sourceVfs, journal);
+        dlcSource.sourcePath = path;
+        dlcSource.episode = dlc;
         if (!fillDLCSource(dlc, dlcSource))
         {
             return false;
@@ -677,7 +705,51 @@ bool Installer::install(const Sources &sources, const std::filesystem::path &tar
     // Install files in reverse order of importance. In case of a process crash or power outage, this will increase the likelihood of the installation
     // missing critical files required for the game to run. These files are used as the way to detect if the game is installed.
 
-    // Install the DLC.
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    // Keep every selected component in one SDK transaction; never pre-copy DLC
+    // into a live installation where legacy rollback could delete old files.
+    if (!sources.gameSourcePath.empty() || !sources.dlc.empty())
+    {
+        gta4::install::Selection selection;
+        selection.game_source = sources.gameSourcePath;
+        selection.update_source = sources.updateSourcePath;
+        for (const auto &dlc : sources.dlc)
+        {
+            if (dlc.sourcePath.empty() ||
+                (dlc.episode != DLC::TheLostAndDamned && dlc.episode != DLC::TheBalladOfGayTony))
+            {
+                journal.lastResult = Journal::Result::DLCParsingFailed;
+                journal.lastErrorMessage = "A supported original DLC source is required.";
+                return false;
+            }
+            selection.dlc_sources.push_back({
+                dlc.episode == DLC::TheLostAndDamned ? gta4::install::Episode::kTlad : gta4::install::Episode::kTbogt,
+                dlc.sourcePath});
+        }
+        gta4::install::Progress progress;
+        const auto previousBytes = journal.progressCounter;
+        progress.should_continue = [&]() {
+            journal.progressCounter = previousBytes + progress.copied_bytes.load();
+            journal.progressTotal = std::max(journal.progressCounter,
+                previousBytes + progress.total_bytes.load());
+            // This may block on cancellation confirmation. Install is on this
+            // same thread, so no writes or publish can proceed during the prompt.
+            return progressCallback();
+        };
+        const auto result = gta4::install::Install(selection, targetDirectory, progress);
+        journal.progressCounter = previousBytes + progress.copied_bytes.load();
+        journal.progressTotal = std::max(journal.progressCounter, journal.progressTotal);
+        if (!result.success)
+        {
+            journal.lastResult = progress.cancel_requested.load() ? Journal::Result::Cancelled : Journal::Result::PatchProcessFailed;
+            journal.lastErrorMessage = result.error;
+            return false;
+        }
+        return true;
+    }
+#endif
+
+    // Install the DLC (legacy hosts only).
     if (!sources.dlc.empty())
     {
         journal.createdDirectories.insert(targetDirectory / DLCDirectory);
@@ -702,6 +774,7 @@ bool Installer::install(const Sources &sources, const std::filesystem::path &tar
             }
         }
     }
+
 
     // If no game was specified, we're finished. This means the user was only installing the DLC.
     if ((sources.game == nullptr))
@@ -984,6 +1057,9 @@ void Installer::rollback(Journal &journal)
 
 bool Installer::parseGame(const std::filesystem::path &sourcePath)
 {
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    return validateGameVersion(sourcePath).isValid;
+#else
     std::unique_ptr<VirtualFileSystem> sourceVfs = createFileSystemFromPath(sourcePath);
     if (sourceVfs == nullptr)
     {
@@ -991,11 +1067,24 @@ bool Installer::parseGame(const std::filesystem::path &sourcePath)
     }
 
     return sourceVfs->exists(GameExecutableFile);
+#endif
 }
 
 GameVersionResult Installer::validateGameVersion(const std::filesystem::path &sourcePath)
 {
     GameVersionResult result;
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    const auto inspection = gta4::install::InspectGameSource(sourcePath);
+    result.isValid = inspection.supported();
+    result.isCorrectGame = inspection.title_id == GTA4TitleId;
+    result.isCorrectRegion = inspection.supported();
+    result.titleId = inspection.title_id;
+    result.region = inspection.region;
+    result.detectedRegion = gta4::install::FormatXexRegion(inspection.region);
+    result.errorTitle = "Unsupported game source";
+    result.errorMessage = gta4::install::FormatGameSourceDiagnostics(inspection);
+    return result;
+#endif
     
     // Create VFS to access the game content
     std::unique_ptr<VirtualFileSystem> sourceVfs = createFileSystemFromPath(sourcePath);
@@ -1106,6 +1195,12 @@ std::string Installer::checkGameUpdateCompatibility(
     const std::filesystem::path& gameSourcePath,
     const std::filesystem::path& updatePath)
 {
+#ifdef LIBERTY_RECOMP_SDK_INSTALLER
+    gta4::install::Selection selection;
+    selection.game_source = gameSourcePath.extension() == ".xex" ? gameSourcePath.parent_path() : gameSourcePath;
+    selection.update_source = updatePath;
+    return gta4::install::ValidateSelection(selection).error;
+#endif
     // Load base game VFS
     std::unique_ptr<VirtualFileSystem> gameVfs = createFileSystemFromPath(gameSourcePath);
     if (!gameVfs)

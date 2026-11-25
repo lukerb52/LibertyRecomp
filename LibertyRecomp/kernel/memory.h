@@ -5,6 +5,7 @@
 #define MEM_RESERVE 0x00002000  
 #endif
 
+#include <cpu/ppc_context.h>
 #include <memory>
 namespace rex::memory { class Memory; }
 
@@ -15,10 +16,10 @@ struct Memory
     Memory();
     ~Memory();  // Defined in .cpp where rex::memory::Memory is complete
 
-    // Initialize memory from RexGlue's memory::Memory system.
-    // Must be called before KiSystemStartup(). Creates a file-backed 4GB
-    // mapping with proper heap management, then populates function tables
-    // and vtables identically to the legacy constructor path.
+    // Optional standalone memory allocation and function-table registration.
+    // Dispatch is authoritative in rex::Runtime: FindFunction/InsertFunction
+    // require a live runtime whose virtual_membase() matches base.
+    // Normal startup uses Runtime::Setup() and sets base directly instead.
     void InitializeFromRexGlue();
 
     // Access the underlying RexGlue memory system (available after InitializeFromRexGlue)
@@ -58,15 +59,8 @@ public:
         return static_cast<uint32_t>(static_cast<const uint8_t*>(host) - base);
     }
 
-    PPCFunc* FindFunction(uint32_t guest) const noexcept
-    {
-        return PPC_LOOKUP_FUNC(base, guest);
-    }
-
-    void InsertFunction(uint32_t guest, PPCFunc* host)
-    {
-        PPC_LOOKUP_FUNC(base, guest) = host;
-    }
+    PPCFunc* FindFunction(uint32_t guest) const noexcept;
+    void InsertFunction(uint32_t guest, PPCFunc* host);
 };
 
 extern "C" void* MmGetHostAddress(uint32_t ptr);

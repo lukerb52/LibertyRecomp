@@ -243,6 +243,9 @@ void PostProcessRenderer::Shutdown() {
 }
 
 void PostProcessRenderer::Resize(uint32_t displayWidth, uint32_t displayHeight) {
+    if (!m_initialized) {
+        return;
+    }
     if (displayWidth == m_displayWidth && displayHeight == m_displayHeight) {
         return;
     }

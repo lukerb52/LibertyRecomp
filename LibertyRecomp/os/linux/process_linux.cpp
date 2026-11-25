@@ -1,13 +1,17 @@
 #include <os/process.h>
 
 #include <signal.h>
+#include <limits.h>
+#include <unistd.h>
 
 std::filesystem::path os::process::GetExecutablePath()
 {
-    char exePath[PATH_MAX] = {};
-    if (readlink("/proc/self/exe", exePath, PATH_MAX) > 0)
+    char exePath[PATH_MAX];
+    const ssize_t length = readlink("/proc/self/exe", exePath, sizeof(exePath));
+    if (length > 0 && static_cast<size_t>(length) < sizeof(exePath))
     {
-        return std::filesystem::path(std::u8string_view((const char8_t*)(exePath)));
+        return std::filesystem::path(std::u8string_view(
+            reinterpret_cast<const char8_t*>(exePath), static_cast<size_t>(length)));
     }
     else
     {
